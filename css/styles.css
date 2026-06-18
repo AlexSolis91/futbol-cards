@@ -1,0 +1,452 @@
+/* ============================================================
+   FUTBOL CARDS — Estilos compartidos
+   Identidad: dossier de scouting sobre césped nocturno.
+   Tipografía de marcador (Oswald) + cuerpo limpio (Inter).
+   ============================================================ */
+
+:root {
+  --pitch-950: #0b1c15;
+  --pitch-900: #102a20;
+  --pitch-800: #16382a;
+  --card-surface: #122b21;
+  --line: rgba(242, 240, 230, 0.1);
+  --ink: #f2f0e6;
+  --ink-muted: #8fa89b;
+  --gold: #d4af37;
+  --turf: #3ddc97;
+  --danger: #e0584c;
+
+  --rareza-bronce: #a6691e;
+  --rareza-plata: #b7c0c8;
+  --rareza-oro: #d4af37;
+  --rareza-leyenda: #9b5cf6;
+
+  --font-display: "Oswald", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 0%, var(--pitch-900), var(--pitch-950) 60%);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+body {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 80px
+    ),
+    radial-gradient(circle at 20% 0%, var(--pitch-900), var(--pitch-950) 60%);
+}
+
+h1, h2, h3, label, .eyebrow, button {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+a {
+  color: var(--turf);
+}
+
+/* ---------- Topbar ---------- */
+
+.topbar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 28px clamp(20px, 5vw, 64px) 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar .brand {
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.topbar .brand span {
+  color: var(--gold);
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.18em;
+}
+
+#logout-btn {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink-muted);
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+#logout-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink-muted);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---------- Login ---------- */
+
+#login-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 24px;
+}
+
+.login-card {
+  background: var(--card-surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.login-card h1 {
+  font-size: 1.4rem;
+  margin: 0 0 6px;
+}
+
+.login-card p {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  margin: 0 0 24px;
+}
+
+/* ---------- Layout principal ---------- */
+
+main {
+  padding: clamp(20px, 5vw, 64px);
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 880px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Formulario ---------- */
+
+.form-card {
+  background: var(--card-surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 32px clamp(20px, 4vw, 36px);
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0 0 28px;
+}
+
+legend {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--gold);
+  margin-bottom: 14px;
+  padding: 0;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.06em;
+}
+
+input, select {
+  background: var(--pitch-900);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+}
+
+input:focus, select:focus, button:focus-visible {
+  outline: 2px solid var(--turf);
+  outline-offset: 1px;
+}
+
+input::placeholder {
+  color: #5b6e64;
+}
+
+.submit-btn {
+  width: 100%;
+  background: var(--turf);
+  color: var(--pitch-950);
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.submit-btn:hover {
+  filter: brightness(1.08);
+}
+
+.login-card button[type="submit"] {
+  width: 100%;
+  background: var(--gold);
+  color: var(--pitch-950);
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.8rem;
+  margin-top: 10px;
+  min-height: 1em;
+}
+
+/* ---------- Preview de carta ---------- */
+
+.preview-wrap {
+  position: sticky;
+  top: 24px;
+}
+
+.preview-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.18em;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.player-card {
+  position: relative;
+  background: linear-gradient(160deg, var(--pitch-800), var(--pitch-950));
+  border: 2px solid var(--rareza-bronce);
+  border-radius: 20px;
+  padding: 22px;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: border-color 0.2s ease;
+}
+
+.player-card .rating {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.player-card .rating small {
+  display: block;
+  font-size: 0.6rem;
+  color: var(--ink-muted);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+
+.player-card .flag {
+  position: absolute;
+  top: 20px;
+  right: 18px;
+  font-size: 1.6rem;
+}
+
+.player-card .photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--pitch-900);
+  border: 2px solid var(--line);
+  margin-top: 36px;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-muted);
+  font-size: 0.7rem;
+  overflow: hidden;
+}
+
+.player-card .photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.player-card .name {
+  margin-top: 16px;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.player-card .position-badge {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--turf);
+  letter-spacing: 0.08em;
+}
+
+.player-card .rareza-tag {
+  margin-top: auto;
+  padding-top: 14px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.16em;
+}
+
+/* ---------- Lista de jugadores recientes ---------- */
+
+#recent-players {
+  margin-top: 32px;
+}
+
+#recent-players h2 {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--card-surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.player-row .row-rating {
+  font-family: var(--font-mono);
+  color: var(--gold);
+  font-weight: 700;
+  min-width: 28px;
+}
+
+.player-row .row-flag {
+  font-size: 1.1rem;
+}
+
+.player-row .row-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.player-row .row-pos {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
+.player-row .delete-btn {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.player-row .delete-btn:hover {
+  background: rgba(224, 88, 76, 0.12);
+}
+
+/* ---------- Toast ---------- */
+
+#toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--turf);
+  color: var(--pitch-950);
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+#toast.error {
+  background: var(--danger);
+  color: var(--ink);
+}
