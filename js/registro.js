@@ -1,173 +1,178 @@
-// ============================================================
-// REGISTRO.JS — Lógica de la Ficha de Registro de Jugador
-// ============================================================
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
+  getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  orderBy,
-  limit,
-  deleteDoc,
-  doc,
-  serverTimestamp,
+  getFirestore, collection, addDoc, getDocs, query,
+  orderBy, limit, deleteDoc, doc, serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 import { firebaseConfig } from "../js/firebase-config.js";
 
-// ---------- Inicialización ----------
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+const db   = getFirestore(app);
 
 // ---------- Catálogos ----------
 const POSICIONES = [
-  { value: "GK", label: "GK — Portero" },
-  { value: "LD", label: "LD — Lateral Derecho" },
-  { value: "LI", label: "LI — Lateral Izquierdo" },
+  { value: "GK",  label: "GK — Portero" },
+  { value: "LD",  label: "LD — Lateral Derecho" },
+  { value: "LI",  label: "LI — Lateral Izquierdo" },
   { value: "DFC", label: "DFC — Defensa Central" },
   { value: "MCD", label: "MCD — Mediocentro Defensivo" },
-  { value: "MD", label: "MD — Volante Derecho" },
-  { value: "MI", label: "MI — Volante Izquierdo" },
-  { value: "MC", label: "MC — Mediocentro" },
+  { value: "MD",  label: "MD — Volante Derecho" },
+  { value: "MI",  label: "MI — Volante Izquierdo" },
+  { value: "MC",  label: "MC — Mediocentro" },
   { value: "MCO", label: "MCO — Mediocentro Ofensivo" },
-  { value: "ED", label: "ED — Extremo Derecho" },
-  { value: "EI", label: "EI — Extremo Izquierdo" },
-  { value: "DC", label: "DC — Delantero Centro" },
+  { value: "ED",  label: "ED — Extremo Derecho" },
+  { value: "EI",  label: "EI — Extremo Izquierdo" },
+  { value: "DC",  label: "DC — Delantero Centro" },
 ];
 
 const PAISES = [
-  ["Argentina", "AR"], ["Brasil", "BR"], ["Uruguay", "UY"], ["Chile", "CL"],
-  ["Colombia", "CO"], ["Paraguay", "PY"], ["Perú", "PE"], ["Ecuador", "EC"],
-  ["Venezuela", "VE"], ["Bolivia", "BO"], ["México", "MX"], ["Estados Unidos", "US"],
-  ["Canadá", "CA"], ["Costa Rica", "CR"], ["Honduras", "HN"], ["Panamá", "PA"],
-  ["Jamaica", "JM"], ["Guatemala", "GT"], ["El Salvador", "SV"], ["España", "ES"],
-  ["Portugal", "PT"], ["Francia", "FR"], ["Inglaterra", "GB"], ["Alemania", "DE"],
-  ["Italia", "IT"], ["Países Bajos", "NL"], ["Bélgica", "BE"], ["Croacia", "HR"],
-  ["Polonia", "PL"], ["Suiza", "CH"], ["Austria", "AT"], ["Dinamarca", "DK"],
-  ["Suecia", "SE"], ["Noruega", "NO"], ["Escocia", "GB"], ["Gales", "GB"],
-  ["Irlanda", "IE"], ["Rusia", "RU"], ["Ucrania", "UA"], ["Turquía", "TR"],
-  ["Grecia", "GR"], ["República Checa", "CZ"], ["Eslovaquia", "SK"], ["Hungría", "HU"],
-  ["Rumania", "RO"], ["Serbia", "RS"], ["Bosnia y Herzegovina", "BA"], ["Senegal", "SN"],
-  ["Marruecos", "MA"], ["Nigeria", "NG"], ["Ghana", "GH"], ["Camerún", "CM"],
-  ["Egipto", "EG"], ["Argelia", "DZ"], ["Túnez", "TN"], ["Costa de Marfil", "CI"],
-  ["Mali", "ML"], ["Japón", "JP"], ["Corea del Sur", "KR"], ["Arabia Saudita", "SA"],
-  ["Qatar", "QA"], ["Irán", "IR"], ["Australia", "AU"], ["China", "CN"],
-  ["Sudáfrica", "ZA"], ["Nueva Zelanda", "NZ"],
+  ["Argentina","AR"],["Brasil","BR"],["Uruguay","UY"],["Chile","CL"],
+  ["Colombia","CO"],["Paraguay","PY"],["Perú","PE"],["Ecuador","EC"],
+  ["Venezuela","VE"],["Bolivia","BO"],["México","MX"],["Estados Unidos","US"],
+  ["Canadá","CA"],["Costa Rica","CR"],["Honduras","HN"],["Panamá","PA"],
+  ["Jamaica","JM"],["Guatemala","GT"],["El Salvador","SV"],["España","ES"],
+  ["Portugal","PT"],["Francia","FR"],["Inglaterra","GB"],["Alemania","DE"],
+  ["Italia","IT"],["Países Bajos","NL"],["Bélgica","BE"],["Croacia","HR"],
+  ["Polonia","PL"],["Suiza","CH"],["Austria","AT"],["Dinamarca","DK"],
+  ["Suecia","SE"],["Noruega","NO"],["Escocia","GB"],["Gales","GB"],
+  ["Irlanda","IE"],["Rusia","RU"],["Ucrania","UA"],["Turquía","TR"],
+  ["Grecia","GR"],["República Checa","CZ"],["Eslovaquia","SK"],["Hungría","HU"],
+  ["Rumania","RO"],["Serbia","RS"],["Bosnia y Herzegovina","BA"],["Senegal","SN"],
+  ["Marruecos","MA"],["Nigeria","NG"],["Ghana","GH"],["Camerún","CM"],
+  ["Egipto","EG"],["Argelia","DZ"],["Túnez","TN"],["Costa de Marfil","CI"],
+  ["Mali","ML"],["Japón","JP"],["Corea del Sur","KR"],["Arabia Saudita","SA"],
+  ["Qatar","QA"],["Irán","IR"],["Australia","AU"],["China","CN"],
+  ["Sudáfrica","ZA"],["Nueva Zelanda","NZ"],
+];
+
+const BONIF_VALS = [5,4,3,2,1,0,-1,-2,-3,-4,-5];
+
+const ESTRATEGIAS_OF = [
+  { id: "bof_contraataque", label: "Contraataque" },
+  { id: "bof_posesion",     label: "Juego de Posesión (Tiki-Taka)" },
+  { id: "bof_presion",      label: "Presión Alta (Gegenpressing)" },
+  { id: "bof_directo",      label: "Juego Directo" },
+];
+
+const ESTRATEGIAS_DEF = [
+  { id: "bdef_bloquebajo",  label: "Bloque Bajo" },
+  { id: "bdef_bloquealto",  label: "Bloque Alto" },
+  { id: "bdef_zona",        label: "Defensa por Zona" },
+  { id: "bdef_marcaje",     label: "Marcaje al Hombre" },
 ];
 
 function flagEmoji(code) {
-  return code
-    .toUpperCase()
-    .replace(/./g, (char) => String.fromCodePoint(127397 + char.charCodeAt(0)));
+  return code.toUpperCase().replace(/./g, c =>
+    String.fromCodePoint(127397 + c.charCodeAt(0))
+  );
 }
-
-function paisACodigo(nombrePais) {
-  const match = PAISES.find(([nombre]) => nombre === nombrePais);
-  return match ? match[1] : null;
+function paisACodigo(nombre) {
+  const m = PAISES.find(([n]) => n === nombre);
+  return m ? m[1] : null;
 }
 
 // ---------- Poblar selects ----------
 function poblarSelects() {
-  const nacionalidad = document.getElementById("nacionalidad");
+  const sel = document.getElementById("nacionalidad");
   PAISES.forEach(([nombre]) => {
-    const opt = document.createElement("option");
-    opt.value = nombre;
-    opt.textContent = nombre;
-    nacionalidad.appendChild(opt);
+    const o = document.createElement("option");
+    o.value = nombre; o.textContent = nombre;
+    sel.appendChild(o);
   });
 
-  ["posicionNatural", "posicionSecundaria", "posicionTerciaria"].forEach((id) => {
-    const select = document.getElementById(id);
-    POSICIONES.forEach((pos) => {
-      const opt = document.createElement("option");
-      opt.value = pos.value;
-      opt.textContent = pos.label;
-      select.appendChild(opt);
+  ["posicionNatural","posicionSecundaria","posicionTerciaria"].forEach(id => {
+    const s = document.getElementById(id);
+    POSICIONES.forEach(pos => {
+      const o = document.createElement("option");
+      o.value = pos.value; o.textContent = pos.label;
+      s.appendChild(o);
     });
   });
+
+  // Poblar dropdowns de bonificación
+  [...ESTRATEGIAS_OF, ...ESTRATEGIAS_DEF].forEach(({ id }) => {
+    const sel = document.getElementById(id);
+    BONIF_VALS.forEach(v => {
+      const o = document.createElement("option");
+      o.value = v;
+      o.textContent = v > 0 ? `+${v}` : `${v}`;
+      if (v === 0) o.selected = true;
+      sel.appendChild(o);
+    });
+    actualizarColorBonif(sel);
+    sel.addEventListener("change", () => actualizarColorBonif(sel));
+  });
 }
+
+function actualizarColorBonif(sel) {
+  const v = parseInt(sel.value);
+  sel.classList.remove("positivo","negativo","neutro");
+  if (v > 0) sel.classList.add("positivo");
+  else if (v < 0) sel.classList.add("negativo");
+  else sel.classList.add("neutro");
+}
+
 poblarSelects();
 
-// ---------- Habilitar/deshabilitar valoraciones secundarias ----------
+// ---------- Toggle valoraciones secundarias ----------
 function enlazarToggle(selectId, inputId) {
-  const select = document.getElementById(selectId);
-  const input = document.getElementById(inputId);
-  select.addEventListener("change", () => {
-    if (select.value === "") {
-      input.disabled = true;
-      input.value = "";
-    } else {
-      input.disabled = false;
-    }
+  const s = document.getElementById(selectId);
+  const i = document.getElementById(inputId);
+  s.addEventListener("change", () => {
+    i.disabled = s.value === "";
+    if (s.value === "") i.value = "";
     actualizarPreview();
   });
 }
-enlazarToggle("posicionSecundaria", "valoracionSecundaria");
-enlazarToggle("posicionTerciaria", "valoracionTerciaria");
+enlazarToggle("posicionSecundaria","valoracionSecundaria");
+enlazarToggle("posicionTerciaria","valoracionTerciaria");
 
-// ---------- Preview en vivo ----------
-const previewCard = document.getElementById("preview-card");
-const previewRating = document.getElementById("preview-rating");
-const previewFlag = document.getElementById("preview-flag");
-const previewPhoto = document.getElementById("preview-photo");
-const previewName = document.getElementById("preview-name");
-const previewPosition = document.getElementById("preview-position");
-const previewRareza = document.getElementById("preview-rareza");
-
+// ---------- Preview ----------
 const RAREZA_COLOR = {
-  Bronce: "var(--rareza-bronce)",
-  Plata: "var(--rareza-plata)",
-  Oro: "var(--rareza-oro)",
-  Leyenda: "var(--rareza-leyenda)",
+  Bronce: "var(--rareza-bronce)", Plata: "var(--rareza-plata)",
+  Oro:    "var(--rareza-oro)",    Leyenda: "var(--rareza-leyenda)",
 };
 
 function actualizarPreview() {
-  const nombre = document.getElementById("nombre").value || "Nombre del jugador";
-  const nacionalidad = document.getElementById("nacionalidad").value;
-  const posicion = document.getElementById("posicionNatural").value || "POS";
-  const valoracion = document.getElementById("valoracionNatural").value || "--";
-  const imagenURL = document.getElementById("imagenURL").value;
-  const rareza = document.getElementById("rareza").value;
+  const nombre      = document.getElementById("nombre").value || "Nombre del jugador";
+  const nacionalidad= document.getElementById("nacionalidad").value;
+  const posicion    = document.getElementById("posicionNatural").value || "POS";
+  const valoracion  = document.getElementById("valoracionNatural").value || "--";
+  const imagenURL   = document.getElementById("imagenURL").value;
+  const rareza      = document.getElementById("rareza").value;
 
-  previewName.textContent = nombre;
-  previewPosition.textContent = posicion;
-  previewRating.innerHTML = `${valoracion}<small>OVR</small>`;
-  previewRareza.textContent = rareza;
-  previewCard.style.borderColor = RAREZA_COLOR[rareza] || "var(--rareza-bronce)";
+  document.getElementById("preview-name").textContent    = nombre;
+  document.getElementById("preview-position").textContent= posicion;
+  document.getElementById("preview-rating").innerHTML    = `${valoracion}<small>OVR</small>`;
+  document.getElementById("preview-rareza").textContent  = rareza;
+  document.getElementById("preview-card").style.borderColor = RAREZA_COLOR[rareza] || "var(--rareza-bronce)";
 
   const codigo = paisACodigo(nacionalidad);
-  previewFlag.textContent = codigo ? flagEmoji(codigo) : "🏳️";
+  document.getElementById("preview-flag").textContent = codigo ? flagEmoji(codigo) : "🏳️";
 
+  const photo = document.getElementById("preview-photo");
   if (imagenURL) {
-    previewPhoto.innerHTML = `<img src="${imagenURL}" alt="${nombre}" onerror="this.parentElement.innerHTML='Imagen no válida'" />`;
+    photo.innerHTML = `<img src="${imagenURL}" alt="${nombre}" onerror="this.parentElement.innerHTML='Imagen no válida'" />`;
   } else {
-    previewPhoto.innerHTML = "Sin foto";
+    photo.innerHTML = "Sin foto";
   }
 }
 
-[
-  "nombre", "nacionalidad", "posicionNatural", "valoracionNatural",
-  "imagenURL", "rareza",
-].forEach((id) => {
-  document.getElementById(id).addEventListener("input", actualizarPreview);
-  document.getElementById(id).addEventListener("change", actualizarPreview);
-});
+["nombre","nacionalidad","posicionNatural","valoracionNatural","imagenURL","rareza"]
+  .forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener("input",  actualizarPreview);
+    el.addEventListener("change", actualizarPreview);
+  });
 actualizarPreview();
 
 // ---------- Toast ----------
 const toast = document.getElementById("toast");
-function mostrarToast(mensaje, esError = false) {
-  toast.textContent = mensaje;
+function mostrarToast(msg, esError = false) {
+  toast.textContent = msg;
   toast.classList.toggle("error", esError);
   toast.classList.add("show");
   setTimeout(() => toast.classList.remove("show"), 2600);
@@ -175,25 +180,27 @@ function mostrarToast(mensaje, esError = false) {
 
 // ---------- Login ----------
 const loginScreen = document.getElementById("login-screen");
-const appEl = document.getElementById("app");
-const loginForm = document.getElementById("login-form");
-const loginError = document.getElementById("login-error");
+const appEl       = document.getElementById("app");
+const loginForm   = document.getElementById("login-form");
+const loginError  = document.getElementById("login-error");
 
-loginForm.addEventListener("submit", async (e) => {
+loginForm.addEventListener("submit", async e => {
   e.preventDefault();
   loginError.textContent = "";
-  const email = document.getElementById("login-email").value;
-  const pass = document.getElementById("login-pass").value;
   try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch (err) {
+    await signInWithEmailAndPassword(
+      auth,
+      document.getElementById("login-email").value,
+      document.getElementById("login-pass").value
+    );
+  } catch {
     loginError.textContent = "Correo o contraseña incorrectos.";
   }
 });
 
 document.getElementById("logout-btn").addEventListener("click", () => signOut(auth));
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, user => {
   if (user) {
     loginScreen.classList.add("hidden");
     appEl.classList.remove("hidden");
@@ -205,29 +212,34 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ---------- Guardar jugador ----------
-const formJugador = document.getElementById("form-jugador");
-const formError = document.getElementById("form-error");
-
-formJugador.addEventListener("submit", async (e) => {
+document.getElementById("form-jugador").addEventListener("submit", async e => {
   e.preventDefault();
+  const formError = document.getElementById("form-error");
   formError.textContent = "";
 
   const jugador = {
-    nombre: document.getElementById("nombre").value.trim(),
-    nacionalidad: document.getElementById("nacionalidad").value,
-    edad: Number(document.getElementById("edad").value) || null,
-    imagenURL: document.getElementById("imagenURL").value.trim() || null,
-    rareza: document.getElementById("rareza").value,
-    posicionNatural: document.getElementById("posicionNatural").value,
-    valoracionNatural: Number(document.getElementById("valoracionNatural").value),
+    nombre:             document.getElementById("nombre").value.trim(),
+    nacionalidad:       document.getElementById("nacionalidad").value,
+    imagenURL:          document.getElementById("imagenURL").value.trim() || null,
+    rareza:             document.getElementById("rareza").value,
+    posicionNatural:    document.getElementById("posicionNatural").value,
+    valoracionNatural:  Number(document.getElementById("valoracionNatural").value),
     posicionSecundaria: document.getElementById("posicionSecundaria").value || null,
     valoracionSecundaria: Number(document.getElementById("valoracionSecundaria").value) || null,
-    posicionTerciaria: document.getElementById("posicionTerciaria").value || null,
+    posicionTerciaria:  document.getElementById("posicionTerciaria").value || null,
     valoracionTerciaria: Number(document.getElementById("valoracionTerciaria").value) || null,
-    estrategiaOfensiva: document.getElementById("estrategiaOfensiva").value.trim() || null,
-    bonifOfensiva: Number(document.getElementById("bonifOfensiva").value) || null,
-    estrategiaDefensiva: document.getElementById("estrategiaDefensiva").value.trim() || null,
-    bonifDefensiva: Number(document.getElementById("bonifDefensiva").value) || null,
+    estrategiasOfensivas: {
+      contraataque: Number(document.getElementById("bof_contraataque").value),
+      posesion:     Number(document.getElementById("bof_posesion").value),
+      presionAlta:  Number(document.getElementById("bof_presion").value),
+      juegoDirecto: Number(document.getElementById("bof_directo").value),
+    },
+    estrategiasDefensivas: {
+      bloqueBajo:    Number(document.getElementById("bdef_bloquebajo").value),
+      bloqueAlto:    Number(document.getElementById("bdef_bloquealto").value),
+      zona:          Number(document.getElementById("bdef_zona").value),
+      marcajeHombre: Number(document.getElementById("bdef_marcaje").value),
+    },
     fechaCreacion: serverTimestamp(),
   };
 
@@ -239,57 +251,59 @@ formJugador.addEventListener("submit", async (e) => {
   try {
     await addDoc(collection(db, "jugadores_global"), jugador);
     mostrarToast(`${jugador.nombre} guardado correctamente`);
-    formJugador.reset();
+    document.getElementById("form-jugador").reset();
     document.getElementById("valoracionSecundaria").disabled = true;
-    document.getElementById("valoracionTerciaria").disabled = true;
+    document.getElementById("valoracionTerciaria").disabled  = true;
+    // Resetear colores de bonificación
+    [...ESTRATEGIAS_OF, ...ESTRATEGIAS_DEF].forEach(({ id }) => {
+      const sel = document.getElementById(id);
+      sel.value = "0";
+      actualizarColorBonif(sel);
+    });
     actualizarPreview();
     cargarRecientes();
   } catch (err) {
     console.error(err);
-    formError.textContent = "No se pudo guardar el jugador. Revisa la consola.";
+    document.getElementById("form-error").textContent = "No se pudo guardar. Revisa la consola.";
     mostrarToast("Error al guardar", true);
   }
 });
 
-// ---------- Lista de jugadores recientes ----------
+// ---------- Jugadores recientes ----------
 async function cargarRecientes() {
-  const recentList = document.getElementById("recent-list");
-  recentList.innerHTML = "Cargando...";
-
+  const list = document.getElementById("recent-list");
+  list.innerHTML = "Cargando...";
   try {
-    const q = query(collection(db, "jugadores_global"), orderBy("fechaCreacion", "desc"), limit(10));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      recentList.innerHTML = `<p style="color:var(--ink-muted);">Todavía no hay jugadores registrados.</p>`;
+    const q = query(collection(db,"jugadores_global"), orderBy("fechaCreacion","desc"), limit(10));
+    const snap = await getDocs(q);
+    if (snap.empty) {
+      list.innerHTML = `<p style="color:var(--ink-muted);">Todavía no hay jugadores registrados.</p>`;
       return;
     }
-
-    recentList.innerHTML = "";
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      const codigo = paisACodigo(data.nacionalidad);
+    list.innerHTML = "";
+    snap.forEach(docSnap => {
+      const d = docSnap.data();
+      const codigo = paisACodigo(d.nacionalidad);
       const row = document.createElement("div");
       row.className = "player-row";
       row.innerHTML = `
-        <span class="row-rating">${data.valoracionNatural ?? "--"}</span>
+        <span class="row-rating">${d.valoracionNatural ?? "--"}</span>
         <span class="row-flag">${codigo ? flagEmoji(codigo) : "🏳️"}</span>
-        <span class="row-name">${data.nombre}</span>
-        <span class="row-pos">${data.posicionNatural}</span>
+        <span class="row-name">${d.nombre}</span>
+        <span class="row-pos">${d.posicionNatural}</span>
         <button class="delete-btn" data-id="${docSnap.id}">Eliminar</button>
       `;
-      recentList.appendChild(row);
+      list.appendChild(row);
     });
-
-    recentList.querySelectorAll(".delete-btn").forEach((btn) => {
+    list.querySelectorAll(".delete-btn").forEach(btn => {
       btn.addEventListener("click", async () => {
-        if (!confirm("¿Eliminar este jugador de la base de datos?")) return;
-        await deleteDoc(doc(db, "jugadores_global", btn.dataset.id));
+        if (!confirm("¿Eliminar este jugador?")) return;
+        await deleteDoc(doc(db,"jugadores_global", btn.dataset.id));
         cargarRecientes();
       });
     });
   } catch (err) {
     console.error(err);
-    recentList.innerHTML = `<p style="color:var(--danger);">Error al cargar jugadores.</p>`;
+    list.innerHTML = `<p style="color:var(--danger);">Error al cargar jugadores.</p>`;
   }
 }
