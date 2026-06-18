@@ -450,3 +450,43 @@ input::placeholder {
   background: var(--danger);
   color: var(--ink);
 }
+
+/* ---------- Estrategias ---------- */
+.estrategia-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.estrategia-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--pitch-900);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.estrategia-nombre {
+  font-size: 0.85rem;
+  color: var(--ink);
+  flex: 1;
+}
+
+.bonif-select {
+  width: 80px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  padding: 6px 8px;
+  flex-shrink: 0;
+}
+
+/* Color dinámico según valor */
+.bonif-select.positivo { color: #3ddc97; border-color: #3ddc97; }
+.bonif-select.negativo { color: #e0584c; border-color: #e0584c; }
+.bonif-select.neutro   { color: var(--ink-muted); }
