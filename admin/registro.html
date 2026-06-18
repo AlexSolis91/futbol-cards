@@ -31,7 +31,7 @@
     </div>
   </div>
 
-  <!-- ===================== APP (oculta hasta hacer login) ===================== -->
+  <!-- ===================== APP ===================== -->
   <div id="app" class="hidden">
     <header class="topbar">
       <div>
@@ -62,10 +62,6 @@
                   <select id="nacionalidad" required></select>
                 </div>
                 <div class="field">
-                  <label for="edad">Edad</label>
-                  <input type="number" id="edad" min="15" max="45" placeholder="27" />
-                </div>
-                <div class="field">
                   <label for="rareza">Rareza</label>
                   <select id="rareza" required>
                     <option value="Bronce">Bronce</option>
@@ -85,7 +81,6 @@
 
             <fieldset>
               <legend>Posiciones y valoraciones</legend>
-
               <div class="field-row">
                 <div class="field">
                   <label for="posicionNatural">Posición natural</label>
@@ -96,7 +91,6 @@
                   <input type="number" id="valoracionNatural" min="1" max="99" required placeholder="85" />
                 </div>
               </div>
-
               <div class="field-row">
                 <div class="field">
                   <label for="posicionSecundaria">Posición secundaria (opcional)</label>
@@ -109,7 +103,6 @@
                   <input type="number" id="valoracionSecundaria" min="1" max="99" disabled placeholder="—" />
                 </div>
               </div>
-
               <div class="field-row">
                 <div class="field">
                   <label for="posicionTerciaria">Posición terciaria (opcional)</label>
@@ -124,26 +117,48 @@
               </div>
             </fieldset>
 
+            <!-- ESTRATEGIAS OFENSIVAS -->
             <fieldset>
-              <legend>Bonificaciones por estrategia</legend>
-              <div class="field-row">
-                <div class="field">
-                  <label for="estrategiaOfensiva">Estrategia ofensiva</label>
-                  <input type="text" id="estrategiaOfensiva" placeholder="Ej. Contraataque" />
+              <legend>Estrategias Ofensivas</legend>
+              <div class="estrategia-grid">
+                <div class="estrategia-row">
+                  <span class="estrategia-nombre">Contraataque</span>
+                  <select id="bof_contraataque" class="bonif-select"></select>
                 </div>
-                <div class="field">
-                  <label for="bonifOfensiva">Bonificación</label>
-                  <input type="number" id="bonifOfensiva" placeholder="+3" />
+                <div class="estrategia-row">
+                  <span class="estrategia-nombre">Juego de Posesión (Tiki-Taka)</span>
+                  <select id="bof_posesion" class="bonif-select"></select>
+                </div>
+                <div class="estrategia-row">
+                  <span class="estrategia-nombre">Presión Alta (Gegenpressing)</span>
+                  <select id="bof_presion" class="bonif-select"></select>
+                </div>
+                <div class="estrategia-row">
+                  <span class="estrategia-nombre">Juego Directo</span>
+                  <select id="bof_directo" class="bonif-select"></select>
                 </div>
               </div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="estrategiaDefensiva">Estrategia defensiva</label>
-                  <input type="text" id="estrategiaDefensiva" placeholder="Ej. Línea alta" />
+            </fieldset>
+
+            <!-- ESTRATEGIAS DEFENSIVAS -->
+            <fieldset>
+              <legend>Estrategias Defensivas</legend>
+              <div class="estrategia-grid">
+                <div class="estrategia-row">
+                  <span class="estrategia-nombre">Bloque Bajo</span>
+                  <select id="bdef_bloquebajo" class="bonif-select"></select>
                 </div>
-                <div class="field">
-                  <label for="bonifDefensiva">Bonificación</label>
-                  <input type="number" id="bonifDefensiva" placeholder="+2" />
+                <div class="estrategia-row">
+                  <span class="estrategia-nombre">Bloque Alto</span>
+                  <select id="bdef_bloquealto" class="bonif-select"></select>
+                </div>
+                <div class="estrategia-row">
+                  <span class="estrategia-nombre">Defensa por Zona</span>
+                  <select id="bdef_zona" class="bonif-select"></select>
+                </div>
+                <div class="estrategia-row">
+                  <span class="estrategia-nombre">Marcaje al Hombre</span>
+                  <select id="bdef_marcaje" class="bonif-select"></select>
                 </div>
               </div>
             </fieldset>
@@ -153,7 +168,7 @@
           </form>
         </div>
 
-        <!-- ---------- Preview de carta ---------- -->
+        <!-- ---------- Preview ---------- -->
         <div class="preview-wrap">
           <span class="preview-label">Vista previa de la carta</span>
           <div class="player-card" id="preview-card">
@@ -168,7 +183,7 @@
 
       </div>
 
-      <!-- ---------- Lista de jugadores recientes ---------- -->
+      <!-- Lista recientes -->
       <section id="recent-players">
         <h2>Últimos jugadores agregados</h2>
         <div id="recent-list"></div>
@@ -177,7 +192,6 @@
   </div>
 
   <div id="toast"></div>
-
   <script type="module" src="../js/registro.js"></script>
 </body>
 </html>
