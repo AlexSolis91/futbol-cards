@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ficha de Registro — Futbol Cards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+
+  <!-- ===================== PANTALLA DE LOGIN ===================== -->
+  <div id="login-screen">
+    <div class="login-card">
+      <span class="eyebrow">Acceso administrador</span>
+      <h1>Ficha de Registro</h1>
+      <p>Inicia sesión con tu cuenta de administrador para dar de alta jugadores en la base de datos global.</p>
+      <form id="login-form">
+        <div class="field" style="margin-bottom:14px;">
+          <label for="login-email">Correo</label>
+          <input type="email" id="login-email" required autocomplete="username" />
+        </div>
+        <div class="field" style="margin-bottom:14px;">
+          <label for="login-pass">Contraseña</label>
+          <input type="password" id="login-pass" required autocomplete="current-password" />
+        </div>
+        <button type="submit">Entrar</button>
+        <p class="error-text" id="login-error"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== APP (oculta hasta hacer login) ===================== -->
+  <div id="app" class="hidden">
+    <header class="topbar">
+      <div>
+        <div class="brand">FUTBOL <span>CARDS</span></div>
+        <div class="eyebrow">Ficha de Registro de Jugador</div>
+      </div>
+      <button id="logout-btn">Cerrar sesión</button>
+    </header>
+
+    <main>
+      <div class="layout">
+
+        <!-- ---------- Formulario ---------- -->
+        <div class="form-card">
+          <form id="form-jugador">
+
+            <fieldset>
+              <legend>Datos personales</legend>
+              <div class="field-row">
+                <div class="field" style="grid-column: 1 / -1;">
+                  <label for="nombre">Nombre del jugador</label>
+                  <input type="text" id="nombre" required placeholder="Ej. Hugo Sánchez" />
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="nacionalidad">Nacionalidad</label>
+                  <select id="nacionalidad" required></select>
+                </div>
+                <div class="field">
+                  <label for="edad">Edad</label>
+                  <input type="number" id="edad" min="15" max="45" placeholder="27" />
+                </div>
+                <div class="field">
+                  <label for="rareza">Rareza</label>
+                  <select id="rareza" required>
+                    <option value="Bronce">Bronce</option>
+                    <option value="Plata">Plata</option>
+                    <option value="Oro">Oro</option>
+                    <option value="Leyenda">Leyenda</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field" style="grid-column: 1 / -1;">
+                  <label for="imagenURL">URL de la imagen del jugador</label>
+                  <input type="url" id="imagenURL" placeholder="https://..." />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Posiciones y valoraciones</legend>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="posicionNatural">Posición natural</label>
+                  <select id="posicionNatural" required></select>
+                </div>
+                <div class="field">
+                  <label for="valoracionNatural">Valoración</label>
+                  <input type="number" id="valoracionNatural" min="1" max="99" required placeholder="85" />
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="posicionSecundaria">Posición secundaria (opcional)</label>
+                  <select id="posicionSecundaria">
+                    <option value="">Ninguna</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="valoracionSecundaria">Valoración</label>
+                  <input type="number" id="valoracionSecundaria" min="1" max="99" disabled placeholder="—" />
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="posicionTerciaria">Posición terciaria (opcional)</label>
+                  <select id="posicionTerciaria">
+                    <option value="">Ninguna</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="valoracionTerciaria">Valoración</label>
+                  <input type="number" id="valoracionTerciaria" min="1" max="99" disabled placeholder="—" />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Bonificaciones por estrategia</legend>
+              <div class="field-row">
+                <div class="field">
+                  <label for="estrategiaOfensiva">Estrategia ofensiva</label>
+                  <input type="text" id="estrategiaOfensiva" placeholder="Ej. Contraataque" />
+                </div>
+                <div class="field">
+                  <label for="bonifOfensiva">Bonificación</label>
+                  <input type="number" id="bonifOfensiva" placeholder="+3" />
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="estrategiaDefensiva">Estrategia defensiva</label>
+                  <input type="text" id="estrategiaDefensiva" placeholder="Ej. Línea alta" />
+                </div>
+                <div class="field">
+                  <label for="bonifDefensiva">Bonificación</label>
+                  <input type="number" id="bonifDefensiva" placeholder="+2" />
+                </div>
+              </div>
+            </fieldset>
+
+            <button type="submit" class="submit-btn">Guardar jugador</button>
+            <p class="error-text" id="form-error"></p>
+          </form>
+        </div>
+
+        <!-- ---------- Preview de carta ---------- -->
+        <div class="preview-wrap">
+          <span class="preview-label">Vista previa de la carta</span>
+          <div class="player-card" id="preview-card">
+            <div class="rating" id="preview-rating">--<small>OVR</small></div>
+            <div class="flag" id="preview-flag">🏳️</div>
+            <div class="photo" id="preview-photo">Sin foto</div>
+            <div class="name" id="preview-name">Nombre del jugador</div>
+            <div class="position-badge" id="preview-position">POS</div>
+            <div class="rareza-tag" id="preview-rareza">Bronce</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ---------- Lista de jugadores recientes ---------- -->
+      <section id="recent-players">
+        <h2>Últimos jugadores agregados</h2>
+        <div id="recent-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast"></div>
+
+  <script type="module" src="../js/registro.js"></script>
+</body>
+</html>
