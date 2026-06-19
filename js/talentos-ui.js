@@ -2,6 +2,18 @@
 // TALENTOS-UI.JS — Sistema de Talentos (compartido entre
 // Registro y Catálogo/Edición)
 // ============================================================
+//
+// SEMÁNTICA DE SINERGIA (decisión de diseño, para el futuro motor
+// de partidos):
+// Cuando alcance === "sinergia", la condición es de tipo AND, no
+// una suma combinada. Se requiere tener AL MENOS `cantidadMinima`
+// jugadores en el 11 titular para CADA UNO de los valores listados
+// en `valoresCriterio`, todos de forma simultánea.
+//
+// Ej: criterioSinergia="nacionalidad", valoresCriterio=["España","Italia"],
+// cantidadMinima=2  →  exige 2+ jugadores españoles Y 2+ italianos
+// al mismo tiempo en el 11 titular para activar el bono `valor`.
+// ============================================================
 import { POSICIONES, PAISES, RAREZAS } from "./card-utils.js";
 
 export const RAREZA_TALENTOS = {
@@ -113,11 +125,11 @@ function bloqueTalentoHTML(index, data = {}) {
             </select>
           </div>
           <div class="field">
-            <label>Cantidad mínima en el 11</label>
+            <label>Mínimo por cada valor marcado</label>
             <input type="number" class="t-sinergia-cantidad" min="1" max="11" value="${data.cantidadMinima || 2}" />
           </div>
         </div>
-        <label class="sub-label">Valores que cuentan para el umbral</label>
+        <label class="sub-label">Valores marcados (se exige el mínimo en CADA uno, simultáneamente)</label>
         <div class="chk-grid chk-grid-scroll t-sinergia-valores">${sinergiaValoresHTML(critSin, data.valoresCriterio || [])}</div>
       </div>
     </div>`;
