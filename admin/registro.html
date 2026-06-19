@@ -54,76 +54,29 @@
           <form id="form-jugador">
 
             <fieldset>
-              <legend>Datos personales</legend>
+              <legend>Datos del jugador</legend>
               <div class="field-row">
                 <div class="field" style="grid-column: 1 / -1;">
                   <label for="nombre">Nombre del jugador</label>
-                  <input type="text" id="nombre" required placeholder="Ej. Hugo Sánchez" />
-                </div>
-              </div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="nacionalidad">Nacionalidad</label>
-                  <select id="nacionalidad" required></select>
-                </div>
-                <div class="field">
-                  <label for="rareza">Rareza</label>
-                  <select id="rareza" required>
-                    <option value="Estándar">Estándar</option>
-                    <option value="Franquicia">Franquicia</option>
-                    <option value="Elite">Elite</option>
-                    <option value="Elite Mundial">Elite Mundial</option>
-                    <option value="Leyenda">Leyenda</option>
-                  </select>
+                  <input type="text" id="nombre" required placeholder="Ej. Cristiano Ronaldo" />
                 </div>
               </div>
               <div class="field-row">
                 <div class="field" style="grid-column: 1 / -1;">
-                  <label for="imagenURL">URL de la imagen del jugador</label>
-                  <input type="url" id="imagenURL" placeholder="https://..." />
+                  <label for="nacionalidad">Nacionalidad</label>
+                  <select id="nacionalidad" required></select>
                 </div>
               </div>
             </fieldset>
 
             <fieldset>
-              <legend>Posiciones y valoraciones</legend>
-              <div class="field-row">
-                <div class="field">
-                  <label for="posicionNatural">Posición natural</label>
-                  <select id="posicionNatural" required></select>
-                </div>
-                <div class="field">
-                  <label for="valoracionNatural">Valoración</label>
-                  <input type="number" id="valoracionNatural" min="1" max="99" required placeholder="85" />
-                </div>
-              </div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="posicionSecundaria">Posición secundaria (opcional)</label>
-                  <select id="posicionSecundaria">
-                    <option value="">Ninguna</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="valoracionSecundaria">Valoración</label>
-                  <input type="number" id="valoracionSecundaria" min="1" max="99" disabled placeholder="—" />
-                </div>
-              </div>
-              <div class="field-row">
-                <div class="field">
-                  <label for="posicionTerciaria">Posición terciaria (opcional)</label>
-                  <select id="posicionTerciaria">
-                    <option value="">Ninguna</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="valoracionTerciaria">Valoración</label>
-                  <input type="number" id="valoracionTerciaria" min="1" max="99" disabled placeholder="—" />
-                </div>
-              </div>
+              <legend>Versiones de la carta</legend>
+              <p style="font-size:.78rem; color:var(--ink-muted); margin:-6px 0 14px;">
+                Hasta 4 versiones por jugador. La rareza de cada una se calcula automáticamente según su valoración.
+              </p>
+              <div id="versiones-container"></div>
             </fieldset>
 
-            <!-- ESTRATEGIAS OFENSIVAS -->
             <fieldset>
               <legend>Estrategias Ofensivas</legend>
               <div class="estrategia-grid">
@@ -146,7 +99,6 @@
               </div>
             </fieldset>
 
-            <!-- ESTRATEGIAS DEFENSIVAS -->
             <fieldset>
               <legend>Estrategias Defensivas</legend>
               <div class="estrategia-grid">
@@ -172,7 +124,7 @@
             <fieldset>
               <legend>Talentos</legend>
               <p style="font-size:.78rem; color:var(--ink-muted); margin:-6px 0 14px;">
-                La cantidad de talentos depende de la rareza seleccionada arriba.
+                Siempre 5 talentos por jugador. Se activan progresivamente según la rareza de la versión que se posea (1 en Estándar, hasta los 5 en Leyenda).
               </p>
               <div id="talentos-container"></div>
             </fieldset>
@@ -185,6 +137,13 @@
         <!-- ---------- Preview ---------- -->
         <div class="preview-wrap">
           <span class="preview-label">Vista previa de la carta</span>
+
+          <div class="preview-nav">
+            <button type="button" id="preview-prev" class="preview-arrow">‹</button>
+            <span id="preview-version-label">Versión 1</span>
+            <button type="button" id="preview-next" class="preview-arrow">›</button>
+          </div>
+
           <div class="player-card rareza-estandar" id="preview-card">
             <div class="card-img-placeholder" id="preview-photo">Sin foto</div>
             <div class="card-info">
@@ -194,7 +153,7 @@
               </div>
               <div class="card-name" id="preview-name">Nombre del jugador</div>
               <div class="card-info-bottom">
-<span class="card-rareza-label" id="preview-rareza">Estándar</span>
+                <span class="card-rareza-label" id="preview-rareza">Estándar</span>
               </div>
             </div>
           </div>
