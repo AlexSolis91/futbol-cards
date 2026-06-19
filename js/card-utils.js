@@ -92,11 +92,10 @@ export function buildCardHTML(d) {
       <div class="card-info">
         <div class="card-info-top">
           <span class="card-rating">${d.valoracionNatural ?? '--'}</span>
-          <span class="card-flag">${flag}</span>
+          <span class="card-pos">${d.posicionNatural}</span>
         </div>
         <div class="card-name">${d.nombre}</div>
         <div class="card-info-bottom">
-          <span class="card-pos">${d.posicionNatural}</span>
           <span class="card-rareza-label">${d.rareza}</span>
         </div>
       </div>
