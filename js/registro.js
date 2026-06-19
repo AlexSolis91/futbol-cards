@@ -90,8 +90,7 @@ function actualizarPreview() {
   const nombreGlobal = document.getElementById("nombre").value || "Nombre del jugador";
   const v = leerVersionIndividual(versionesContainer, previewVersionIndex) || {};
 
-  const etiqueta = v.etiqueta ? ` (${v.etiqueta})` : "";
-  previewVersionLbl.textContent = `Versión ${previewVersionIndex + 1}${etiqueta}`;
+  previewVersionLbl.textContent = `Versión ${previewVersionIndex + 1}`;
 
   const posicion   = v.posicionNatural || "POS";
   const valoracion = v.valoracionNatural || "--";
