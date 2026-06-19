@@ -97,7 +97,6 @@ export function buildCardHTML(d) {
         </div>
         <div class="card-name">${d.nombre}</div>
         <div class="card-info-bottom">
-          <span class="card-flag">${flag}</span>
           <span class="card-rareza-label">${d.rareza}</span>
         </div>
       </div>
