@@ -25,10 +25,10 @@
   --font-mono:    "JetBrains Mono", monospace;
 
   /* Dimensiones de carta (escala 1.6x sobre base 100x180) */
-  --card-w: 160px;
-  --card-h: 288px;
-  --card-img-h: 240px;
-  --card-info-h: 48px;
+  --card-w: 120px;
+  --card-h: 195px;
+  --card-img-h: 160px;
+  --card-info-h: 35px;
 }
 
 * { box-sizing: border-box; }
@@ -252,9 +252,9 @@ input::placeholder { color:#5b6e64; }
 
 #preview-card {
   --card-w: 200px;
-  --card-h: 360px;
-  --card-img-h: 300px;
-  --card-info-h: 60px;
+  --card-h: 325px;
+  --card-img-h: 267px;
+  --card-info-h: 58px;
 }
 
 #preview-card .card-rating  { font-size: 1.3rem; }
