@@ -31,13 +31,6 @@ function bloqueVersionHTML(index, data = {}) {
 
       <div class="field-row">
         <div class="field" style="grid-column:1/-1;">
-          <label>Club / Etapa (opcional)</label>
-          <input type="text" class="v-etiqueta" placeholder="Ej. Al-Nassr" value="${data.etiqueta || ''}" />
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field" style="grid-column:1/-1;">
           <label>URL de la imagen</label>
           <input type="url" class="v-imagen" placeholder="https://..." value="${data.imagenURL || ''}" />
         </div>
@@ -153,7 +146,6 @@ export function leerVersiones(container) {
     const posTer = block.querySelector(".v-posTer").value;
 
     versiones.push({
-      etiqueta:             block.querySelector(".v-etiqueta").value.trim() || null,
       imagenURL:            block.querySelector(".v-imagen").value.trim() || null,
       posicionNatural:      block.querySelector(".v-posNat").value || null,
       valoracionNatural:    Number(block.querySelector(".v-valNat").value) || null,
@@ -174,7 +166,6 @@ export function leerVersionIndividual(container, index) {
   const block = container.querySelectorAll(".version-block")[index];
   if (!block) return null;
   return {
-    etiqueta:          block.querySelector(".v-etiqueta").value.trim(),
     imagenURL:         block.querySelector(".v-imagen").value.trim(),
     posicionNatural:   block.querySelector(".v-posNat").value,
     valoracionNatural: block.querySelector(".v-valNat").value,
