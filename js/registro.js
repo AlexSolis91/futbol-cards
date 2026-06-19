@@ -7,72 +7,12 @@ import {
   orderBy, limit, deleteDoc, doc, serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "../js/firebase-config.js";
+import { PAISES, POSICIONES, RAREZAS, BONIF_VALS, ESTRATEGIAS_OF, ESTRATEGIAS_DEF,
+         flagEmoji, paisACodigo, rarezaCSS, buildCardHTML } from "../js/card-utils.js";
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
-
-// ---------- Catálogos ----------
-const POSICIONES = [
-  { value: "GK",  label: "GK — Portero" },
-  { value: "LD",  label: "LD — Lateral Derecho" },
-  { value: "LI",  label: "LI — Lateral Izquierdo" },
-  { value: "DFC", label: "DFC — Defensa Central" },
-  { value: "MCD", label: "MCD — Mediocentro Defensivo" },
-  { value: "MD",  label: "MD — Volante Derecho" },
-  { value: "MI",  label: "MI — Volante Izquierdo" },
-  { value: "MC",  label: "MC — Mediocentro" },
-  { value: "MCO", label: "MCO — Mediocentro Ofensivo" },
-  { value: "ED",  label: "ED — Extremo Derecho" },
-  { value: "EI",  label: "EI — Extremo Izquierdo" },
-  { value: "DC",  label: "DC — Delantero Centro" },
-];
-
-const PAISES = [
-  ["Argentina","AR"],["Brasil","BR"],["Uruguay","UY"],["Chile","CL"],
-  ["Colombia","CO"],["Paraguay","PY"],["Perú","PE"],["Ecuador","EC"],
-  ["Venezuela","VE"],["Bolivia","BO"],["México","MX"],["Estados Unidos","US"],
-  ["Canadá","CA"],["Costa Rica","CR"],["Honduras","HN"],["Panamá","PA"],
-  ["Jamaica","JM"],["Guatemala","GT"],["El Salvador","SV"],["España","ES"],
-  ["Portugal","PT"],["Francia","FR"],["Inglaterra","GB"],["Alemania","DE"],
-  ["Italia","IT"],["Países Bajos","NL"],["Bélgica","BE"],["Croacia","HR"],
-  ["Polonia","PL"],["Suiza","CH"],["Austria","AT"],["Dinamarca","DK"],
-  ["Suecia","SE"],["Noruega","NO"],["Escocia","GB"],["Gales","GB"],
-  ["Irlanda","IE"],["Rusia","RU"],["Ucrania","UA"],["Turquía","TR"],
-  ["Grecia","GR"],["República Checa","CZ"],["Eslovaquia","SK"],["Hungría","HU"],
-  ["Rumania","RO"],["Serbia","RS"],["Bosnia y Herzegovina","BA"],["Senegal","SN"],
-  ["Marruecos","MA"],["Nigeria","NG"],["Ghana","GH"],["Camerún","CM"],
-  ["Egipto","EG"],["Argelia","DZ"],["Túnez","TN"],["Costa de Marfil","CI"],
-  ["Mali","ML"],["Japón","JP"],["Corea del Sur","KR"],["Arabia Saudita","SA"],
-  ["Qatar","QA"],["Irán","IR"],["Australia","AU"],["China","CN"],
-  ["Sudáfrica","ZA"],["Nueva Zelanda","NZ"],
-];
-
-const BONIF_VALS = [5,4,3,2,1,0,-1,-2,-3,-4,-5];
-
-const ESTRATEGIAS_OF = [
-  { id: "bof_contraataque", label: "Contraataque" },
-  { id: "bof_posesion",     label: "Juego de Posesión (Tiki-Taka)" },
-  { id: "bof_presion",      label: "Presión Alta (Gegenpressing)" },
-  { id: "bof_directo",      label: "Juego Directo" },
-];
-
-const ESTRATEGIAS_DEF = [
-  { id: "bdef_bloquebajo",  label: "Bloque Bajo" },
-  { id: "bdef_bloquealto",  label: "Bloque Alto" },
-  { id: "bdef_zona",        label: "Defensa por Zona" },
-  { id: "bdef_marcaje",     label: "Marcaje al Hombre" },
-];
-
-function flagEmoji(code) {
-  return code.toUpperCase().replace(/./g, c =>
-    String.fromCodePoint(127397 + c.charCodeAt(0))
-  );
-}
-function paisACodigo(nombre) {
-  const m = PAISES.find(([n]) => n === nombre);
-  return m ? m[1] : null;
-}
 
 // ---------- Poblar selects ----------
 function poblarSelects() {
@@ -131,11 +71,6 @@ enlazarToggle("posicionSecundaria","valoracionSecundaria");
 enlazarToggle("posicionTerciaria","valoracionTerciaria");
 
 // ---------- Preview ----------
-const RAREZA_COLOR = {
-  Bronce: "var(--rareza-bronce)", Plata: "var(--rareza-plata)",
-  Oro:    "var(--rareza-oro)",    Leyenda: "var(--rareza-leyenda)",
-};
-
 function actualizarPreview() {
   const nombre      = document.getElementById("nombre").value || "Nombre del jugador";
   const nacionalidad= document.getElementById("nacionalidad").value;
@@ -144,20 +79,27 @@ function actualizarPreview() {
   const imagenURL   = document.getElementById("imagenURL").value;
   const rareza      = document.getElementById("rareza").value;
 
-  document.getElementById("preview-name").textContent    = nombre;
-  document.getElementById("preview-position").textContent= posicion;
-  document.getElementById("preview-rating").innerHTML    = `${valoracion}<small>OVR</small>`;
-  document.getElementById("preview-rareza").textContent  = rareza;
-  document.getElementById("preview-card").style.borderColor = RAREZA_COLOR[rareza] || "var(--rareza-bronce)";
+  const card = document.getElementById("preview-card");
+
+  // Actualizar clase de rareza
+  card.className = `player-card ${rarezaCSS(rareza)}`;
+
+  document.getElementById("preview-name").textContent     = nombre;
+  document.getElementById("preview-position").textContent = posicion;
+  document.getElementById("preview-rating").textContent   = valoracion;
+  document.getElementById("preview-rareza").textContent   = rareza;
 
   const codigo = paisACodigo(nacionalidad);
   document.getElementById("preview-flag").textContent = codigo ? flagEmoji(codigo) : "🏳️";
 
   const photo = document.getElementById("preview-photo");
   if (imagenURL) {
-    photo.innerHTML = `<img src="${imagenURL}" alt="${nombre}" onerror="this.parentElement.innerHTML='Imagen no válida'" />`;
+    photo.outerHTML = `<img id="preview-photo" class="card-img" src="${imagenURL}" alt="${nombre}" onerror="this.outerHTML='<div class=card-img-placeholder id=preview-photo>Sin foto</div>'" />`;
   } else {
-    photo.innerHTML = "Sin foto";
+    const existing = document.getElementById("preview-photo");
+    if (existing.tagName === "IMG") {
+      existing.outerHTML = `<div class="card-img-placeholder" id="preview-photo">Sin foto</div>`;
+    }
   }
 }
 
