@@ -64,9 +64,10 @@
                 <div class="field">
                   <label for="rareza">Rareza</label>
                   <select id="rareza" required>
-                    <option value="Bronce">Bronce</option>
-                    <option value="Plata">Plata</option>
-                    <option value="Oro">Oro</option>
+                    <option value="Estándar">Estándar</option>
+                    <option value="Franquicia">Franquicia</option>
+                    <option value="Elite">Elite</option>
+                    <option value="Elite Mundial">Elite Mundial</option>
                     <option value="Leyenda">Leyenda</option>
                   </select>
                 </div>
@@ -171,13 +172,19 @@
         <!-- ---------- Preview ---------- -->
         <div class="preview-wrap">
           <span class="preview-label">Vista previa de la carta</span>
-          <div class="player-card" id="preview-card">
-            <div class="rating" id="preview-rating">--<small>OVR</small></div>
-            <div class="flag" id="preview-flag">🏳️</div>
-            <div class="photo" id="preview-photo">Sin foto</div>
-            <div class="name" id="preview-name">Nombre del jugador</div>
-            <div class="position-badge" id="preview-position">POS</div>
-            <div class="rareza-tag" id="preview-rareza">Bronce</div>
+          <div class="player-card rareza-estandar" id="preview-card">
+            <div class="card-img-placeholder" id="preview-photo">Sin foto</div>
+            <div class="card-info">
+              <div class="card-info-top">
+                <span class="card-rating" id="preview-rating">--</span>
+                <span class="card-flag" id="preview-flag">🏳️</span>
+              </div>
+              <div class="card-name" id="preview-name">Nombre del jugador</div>
+              <div class="card-info-bottom">
+                <span class="card-pos" id="preview-position">POS</span>
+                <span class="card-rareza-label" id="preview-rareza">Estándar</span>
+              </div>
+            </div>
           </div>
         </div>
 
