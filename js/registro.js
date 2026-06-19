@@ -1,3 +1,7 @@
+// ============================================================
+// REGISTRO.JS — Lógica de la Ficha de Registro de Jugador
+// ============================================================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
@@ -7,33 +11,27 @@ import {
   orderBy, limit, deleteDoc, doc, serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from "../js/firebase-config.js";
-import { PAISES, POSICIONES, RAREZAS, BONIF_VALS, ESTRATEGIAS_OF, ESTRATEGIAS_DEF,
-         flagEmoji, paisACodigo, rarezaCSS, buildCardHTML } from "../js/card-utils.js";
-import { RAREZA_TALENTOS, ajustarCantidadBloques, leerTalentos } from "../js/talentos-ui.js";
+
+import { PAISES, BONIF_VALS, ESTRATEGIAS_OF, ESTRATEGIAS_DEF,
+         flagEmoji, paisACodigo, rarezaCSS, calcularRareza } from "../js/card-utils.js";
+import { ajustarCantidadBloques, leerTalentos } from "../js/talentos-ui.js";
+import { MAX_VERSIONES, renderVersiones, leerVersiones, leerVersionIndividual } from "../js/versiones-ui.js";
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// ---------- Poblar selects ----------
+const CANTIDAD_TALENTOS_FIJA = 5;
+
+// ---------- Poblar selects de nivel jugador ----------
 function poblarSelects() {
-  const sel = document.getElementById("nacionalidad");
+  const nacionalidad = document.getElementById("nacionalidad");
   PAISES.forEach(([nombre]) => {
     const o = document.createElement("option");
     o.value = nombre; o.textContent = nombre;
-    sel.appendChild(o);
+    nacionalidad.appendChild(o);
   });
 
-  ["posicionNatural","posicionSecundaria","posicionTerciaria"].forEach(id => {
-    const s = document.getElementById(id);
-    POSICIONES.forEach(pos => {
-      const o = document.createElement("option");
-      o.value = pos.value; o.textContent = pos.label;
-      s.appendChild(o);
-    });
-  });
-
-  // Poblar dropdowns de bonificación
   [...ESTRATEGIAS_OF, ...ESTRATEGIAS_DEF].forEach(({ id }) => {
     const sel = document.getElementById(id);
     BONIF_VALS.forEach(v => {
@@ -58,67 +56,74 @@ function actualizarColorBonif(sel) {
 
 poblarSelects();
 
-// ---------- Talentos ----------
+// ---------- Versiones ----------
+const versionesContainer = document.getElementById("versiones-container");
+renderVersiones(versionesContainer);
+
+// Cuando cambia cualquier campo dentro de una versión, refrescamos
+// la preview si esa versión es la que se está mostrando ahora mismo
+versionesContainer.addEventListener("input", e => {
+  const block = e.target.closest(".version-block");
+  if (!block) return;
+  const idx = Number(block.dataset.index);
+  if (idx === previewVersionIndex) actualizarPreview();
+});
+
+// ---------- Talentos (siempre 5, fijos) ----------
 const talentosContainer = document.getElementById("talentos-container");
-function actualizarCantidadTalentos() {
-  const rareza = document.getElementById("rareza").value;
-  const cantidad = RAREZA_TALENTOS[rareza] || 1;
-  ajustarCantidadBloques(talentosContainer, cantidad);
-}
-document.getElementById("rareza").addEventListener("change", actualizarCantidadTalentos);
-actualizarCantidadTalentos(); // inicial (Estándar = 1 talento)
+ajustarCantidadBloques(talentosContainer, CANTIDAD_TALENTOS_FIJA);
 
-// ---------- Toggle valoraciones secundarias ----------
-function enlazarToggle(selectId, inputId) {
-  const s = document.getElementById(selectId);
-  const i = document.getElementById(inputId);
-  s.addEventListener("change", () => {
-    i.disabled = s.value === "";
-    if (s.value === "") i.value = "";
-    actualizarPreview();
-  });
-}
-enlazarToggle("posicionSecundaria","valoracionSecundaria");
-enlazarToggle("posicionTerciaria","valoracionTerciaria");
+// ---------- Preview con flechas de versión ----------
+let previewVersionIndex = 0;
 
-// ---------- Preview ----------
+const previewCard       = document.getElementById("preview-card");
+const previewRating     = document.getElementById("preview-rating");
+const previewPhoto      = document.getElementById("preview-photo");
+const previewName       = document.getElementById("preview-name");
+const previewPosition   = document.getElementById("preview-position");
+const previewRareza     = document.getElementById("preview-rareza");
+const previewVersionLbl = document.getElementById("preview-version-label");
+const btnPrev           = document.getElementById("preview-prev");
+const btnNext           = document.getElementById("preview-next");
+
 function actualizarPreview() {
-  const nombre      = document.getElementById("nombre").value || "Nombre del jugador";
-  const nacionalidad= document.getElementById("nacionalidad").value;
-  const posicion    = document.getElementById("posicionNatural").value || "POS";
-  const valoracion  = document.getElementById("valoracionNatural").value || "--";
-  const imagenURL   = document.getElementById("imagenURL").value;
-  const rareza      = document.getElementById("rareza").value;
+  const nombreGlobal = document.getElementById("nombre").value || "Nombre del jugador";
+  const v = leerVersionIndividual(versionesContainer, previewVersionIndex) || {};
 
-  const card = document.getElementById("preview-card");
+  const etiqueta = v.etiqueta ? ` (${v.etiqueta})` : "";
+  previewVersionLbl.textContent = `Versión ${previewVersionIndex + 1}${etiqueta}`;
 
-  // Actualizar clase de rareza
-  card.className = `player-card ${rarezaCSS(rareza)}`;
+  const posicion   = v.posicionNatural || "POS";
+  const valoracion = v.valoracionNatural || "--";
+  const rareza     = calcularRareza(v.valoracionNatural);
 
-  document.getElementById("preview-name").textContent     = nombre;
-  document.getElementById("preview-position").textContent = posicion;
-  document.getElementById("preview-rating").textContent   = valoracion;
-  document.getElementById("preview-rareza").textContent   = rareza;
+  previewName.textContent     = nombreGlobal;
+  previewPosition.textContent = posicion;
+  previewRating.textContent   = valoracion;
+  previewRareza.textContent   = rareza;
+  previewCard.className       = `player-card ${rarezaCSS(rareza)}`;
 
-
-
-  const photo = document.getElementById("preview-photo");
-  if (imagenURL) {
-    photo.outerHTML = `<img id="preview-photo" class="card-img" src="${imagenURL}" alt="${nombre}" onerror="this.outerHTML='<div class=card-img-placeholder id=preview-photo>Sin foto</div>'" />`;
+  if (v.imagenURL) {
+    previewPhoto.outerHTML = `<img id="preview-photo" class="card-img" src="${v.imagenURL}" alt="${nombreGlobal}" onerror="this.outerHTML='<div class=card-img-placeholder id=preview-photo>Sin foto</div>'" />`;
   } else {
     const existing = document.getElementById("preview-photo");
     if (existing.tagName === "IMG") {
       existing.outerHTML = `<div class="card-img-placeholder" id="preview-photo">Sin foto</div>`;
     }
   }
+
+  btnPrev.disabled = previewVersionIndex === 0;
+  btnNext.disabled = previewVersionIndex === MAX_VERSIONES - 1;
 }
 
-["nombre","nacionalidad","posicionNatural","valoracionNatural","imagenURL","rareza"]
-  .forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener("input",  actualizarPreview);
-    el.addEventListener("change", actualizarPreview);
-  });
+btnPrev.addEventListener("click", () => {
+  if (previewVersionIndex > 0) { previewVersionIndex--; actualizarPreview(); }
+});
+btnNext.addEventListener("click", () => {
+  if (previewVersionIndex < MAX_VERSIONES - 1) { previewVersionIndex++; actualizarPreview(); }
+});
+document.getElementById("nombre").addEventListener("input", actualizarPreview);
+
 actualizarPreview();
 
 // ---------- Toast ----------
@@ -169,17 +174,13 @@ document.getElementById("form-jugador").addEventListener("submit", async e => {
   const formError = document.getElementById("form-error");
   formError.textContent = "";
 
+  const versiones = leerVersiones(versionesContainer);
+  const versionPrincipal = versiones.find(v => v.posicionNatural && v.valoracionNatural);
+
   const jugador = {
-    nombre:             document.getElementById("nombre").value.trim(),
-    nacionalidad:       document.getElementById("nacionalidad").value,
-    imagenURL:          document.getElementById("imagenURL").value.trim() || null,
-    rareza:             document.getElementById("rareza").value,
-    posicionNatural:    document.getElementById("posicionNatural").value,
-    valoracionNatural:  Number(document.getElementById("valoracionNatural").value),
-    posicionSecundaria: document.getElementById("posicionSecundaria").value || null,
-    valoracionSecundaria: Number(document.getElementById("valoracionSecundaria").value) || null,
-    posicionTerciaria:  document.getElementById("posicionTerciaria").value || null,
-    valoracionTerciaria: Number(document.getElementById("valoracionTerciaria").value) || null,
+    nombre:       document.getElementById("nombre").value.trim(),
+    nacionalidad: document.getElementById("nacionalidad").value,
+    versiones,
     estrategiasOfensivas: {
       contraataque: Number(document.getElementById("bof_contraataque").value),
       posesion:     Number(document.getElementById("bof_posesion").value),
@@ -196,8 +197,8 @@ document.getElementById("form-jugador").addEventListener("submit", async e => {
     fechaCreacion: serverTimestamp(),
   };
 
-  if (!jugador.nombre || !jugador.nacionalidad || !jugador.posicionNatural || !jugador.valoracionNatural) {
-    formError.textContent = "Completa al menos nombre, nacionalidad, posición y valoración natural.";
+  if (!jugador.nombre || !jugador.nacionalidad || !versionPrincipal) {
+    formError.textContent = "Completa al menos el nombre, nacionalidad y la Versión 1 (posición + valoración).";
     return;
   }
 
@@ -205,26 +206,24 @@ document.getElementById("form-jugador").addEventListener("submit", async e => {
     await addDoc(collection(db, "jugadores_global"), jugador);
     mostrarToast(`${jugador.nombre} guardado correctamente`);
     document.getElementById("form-jugador").reset();
-    document.getElementById("valoracionSecundaria").disabled = true;
-    document.getElementById("valoracionTerciaria").disabled  = true;
-    talentosContainer.innerHTML = "";
-    actualizarCantidadTalentos();
-    // Resetear colores de bonificación
-    [...ESTRATEGIAS_OF, ...ESTRATEGIAS_DEF].forEach(({ id }) => {
-      const sel = document.getElementById(id);
-      sel.value = "0";
-      actualizarColorBonif(sel);
-    });
+    renderVersiones(versionesContainer);
+    previewVersionIndex = 0;
     actualizarPreview();
     cargarRecientes();
   } catch (err) {
     console.error(err);
-    document.getElementById("form-error").textContent = "No se pudo guardar. Revisa la consola.";
+    formError.textContent = "No se pudo guardar. Revisa la consola.";
     mostrarToast("Error al guardar", true);
   }
 });
 
 // ---------- Jugadores recientes ----------
+function mejorVersion(jugador) {
+  const versiones = (jugador.versiones || []).filter(v => v && v.valoracionNatural);
+  if (versiones.length === 0) return null;
+  return versiones.reduce((best, v) => v.valoracionNatural > best.valoracionNatural ? v : best, versiones[0]);
+}
+
 async function cargarRecientes() {
   const list = document.getElementById("recent-list");
   list.innerHTML = "Cargando...";
@@ -238,14 +237,15 @@ async function cargarRecientes() {
     list.innerHTML = "";
     snap.forEach(docSnap => {
       const d = docSnap.data();
+      const v = mejorVersion(d);
       const codigo = paisACodigo(d.nacionalidad);
       const row = document.createElement("div");
       row.className = "player-row";
       row.innerHTML = `
-        <span class="row-rating">${d.valoracionNatural ?? "--"}</span>
+        <span class="row-rating">${v ? v.valoracionNatural : "--"}</span>
         <span class="row-flag">${codigo ? flagEmoji(codigo) : "🏳️"}</span>
         <span class="row-name">${d.nombre}</span>
-        <span class="row-pos">${d.posicionNatural}</span>
+        <span class="row-pos">${v ? v.posicionNatural : ""}</span>
         <button class="delete-btn" data-id="${docSnap.id}">Eliminar</button>
       `;
       list.appendChild(row);
