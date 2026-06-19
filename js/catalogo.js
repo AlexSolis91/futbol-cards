@@ -100,8 +100,7 @@ function actualizarEditPreview() {
   const nombreGlobal = document.getElementById("edit-nombre").value || "Nombre del jugador";
   const v = leerVersionIndividual(editVersionesContainer, editPreviewVersionIndex) || {};
 
-  const etiqueta = v.etiqueta ? ` (${v.etiqueta})` : "";
-  editPreviewVersionLbl.textContent = `Versión ${editPreviewVersionIndex + 1}${etiqueta}`;
+  editPreviewVersionLbl.textContent = `Versión ${editPreviewVersionIndex + 1}`;
 
   const posicion   = v.posicionNatural || "POS";
   const valoracion = v.valoracionNatural || "--";
