@@ -169,67 +169,56 @@ input::placeholder { color:#5b6e64; }
 /* Franja inferior de info */
 .player-card .card-info {
   height: var(--card-info-h);
-  padding: 3px 5px 3px;
-  background: rgba(0,0,0,.75);
+  padding: 4px 6px;
+  background: rgba(0,0,0,.80);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   flex-shrink: 0;
+  gap: 2px;
 }
 
-.card-info-top {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 4px;
-}
-
-.card-rating {
-  font-family: var(--font-mono);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1;
-}
-
-.card-flag {
-  font-size: .85rem;
-  line-height: 1;
-}
-
-.card-name {
-  font-family: var(--font-display);
-  font-size: .68rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .03em;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.1;
-}
-
-.card-info-bottom {
+.card-info-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
 }
 
+.card-rating {
+  font-family: var(--font-mono);
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.card-name {
+  font-family: var(--font-body);
+  font-size: .62rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
 .card-pos {
   font-family: var(--font-mono);
-  font-size: .55rem;
+  font-size: .58rem;
   color: var(--turf);
   font-weight: 700;
-  letter-spacing: .05em;
+  letter-spacing: .04em;
+  flex-shrink: 0;
 }
 
 .card-rareza-label {
   font-family: var(--font-display);
-  font-size: .5rem;
+  font-size: .52rem;
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .05em;
   font-weight: 600;
 }
 
@@ -257,11 +246,10 @@ input::placeholder { color:#5b6e64; }
   --card-info-h: 75px;
 }
 
-#preview-card .card-rating  { font-size: 1.4rem; }
-#preview-card .card-flag    { font-size: 1.1rem; }
-#preview-card .card-name    { font-size: .82rem; }
-#preview-card .card-pos     { font-size: .65rem; }
-#preview-card .card-rareza-label { font-size: .6rem; }
+#preview-card .card-rating       { font-size: 1.2rem; }
+#preview-card .card-name         { font-size: .82rem; }
+#preview-card .card-pos          { font-size: .72rem; }
+#preview-card .card-rareza-label { font-size: .65rem; }
 
 /* ---------- Catálogo ---------- */
 .catalog-filters {
