@@ -91,13 +91,13 @@ export function buildCardHTML(d) {
     <div class="player-card ${css}" data-id="${d.id || ''}">
       ${imgHTML}
       <div class="card-info">
-        <div class="card-info-row">
-          <span class="card-name">${d.nombre}</span>
+        <div class="card-info-top">
+          <span class="card-rating">${d.valoracionNatural ?? '--'}</span>
           <span class="card-pos">${d.posicionNatural}</span>
         </div>
-        <div class="card-info-row">
+        <div class="card-name">${d.nombre}</div>
+        <div class="card-info-bottom">
           <span class="card-rareza-label">${d.rareza}</span>
-          <span class="card-rating">${d.valoracionNatural ?? '--'}</span>
         </div>
       </div>
     </div>`;
