@@ -65,6 +65,20 @@ export function calcularRareza(valoracion) {
   return v > 99 ? "Leyenda" : "Estándar";
 }
 
+// Ratio de drop en sobres: fijo por rareza, no se elige a mano.
+export const RAREZA_DROP_RATE = {
+  "Estándar":      49.99,
+  "Franquicia":    30,
+  "Elite":         15,
+  "Elite Mundial": 5,
+  "Leyenda":       0.01,
+};
+
+export function calcularDropRate(valoracion) {
+  const rareza = calcularRareza(valoracion);
+  return RAREZA_DROP_RATE[rareza] ?? 0;
+}
+
 export const BONIF_VALS = [5,4,3,2,1,0,-1,-2,-3,-4,-5];
 
 export const ESTRATEGIAS_OF = [
