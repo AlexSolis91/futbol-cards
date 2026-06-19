@@ -89,9 +89,6 @@ function actualizarPreview() {
   document.getElementById("preview-rating").textContent   = valoracion;
   document.getElementById("preview-rareza").textContent   = rareza;
 
-  const codigo = paisACodigo(nacionalidad);
-  const flagEl = document.getElementById("preview-flag");
-  if (flagEl) flagEl.textContent = codigo ? flagEmoji(codigo) : "🏳️";
 
 
   const photo = document.getElementById("preview-photo");
