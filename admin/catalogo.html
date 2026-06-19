@@ -99,86 +99,94 @@
       <form id="form-editar">
         <input type="hidden" id="edit-id" />
 
-        <!-- Preview con flechas -->
-        <div class="preview-wrap" style="margin-bottom:24px;">
-          <span class="preview-label">Vista previa</span>
-          <div class="preview-nav">
-            <button type="button" id="edit-preview-prev" class="preview-arrow">‹</button>
-            <span id="edit-preview-version-label">Versión 1</span>
-            <button type="button" id="edit-preview-next" class="preview-arrow">›</button>
-          </div>
-          <div class="player-card rareza-estandar" id="edit-preview-card" style="margin:0 auto;">
-            <div class="card-img-placeholder" id="edit-preview-photo">Sin foto</div>
-            <div class="card-info">
-              <div class="card-info-top">
-                <span class="card-rating" id="edit-preview-rating">--</span>
-                <span class="card-pos" id="edit-preview-position">POS</span>
+        <div class="modal-grid">
+
+          <!-- ---------- Columna izquierda: campos ---------- -->
+          <div class="modal-fields-col">
+
+            <fieldset>
+              <legend>Datos del jugador</legend>
+              <div class="field-row">
+                <div class="field" style="grid-column:1/-1;">
+                  <label for="edit-nombre">Nombre</label>
+                  <input type="text" id="edit-nombre" required />
+                </div>
               </div>
-              <div class="card-name" id="edit-preview-name">Nombre del jugador</div>
-              <div class="card-info-bottom">
-                <span class="card-rareza-label" id="edit-preview-rareza">Estándar</span>
+              <div class="field-row">
+                <div class="field" style="grid-column:1/-1;">
+                  <label for="edit-nacionalidad">Nacionalidad</label>
+                  <select id="edit-nacionalidad" required></select>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Versiones de la carta</legend>
+              <p style="font-size:.78rem; color:var(--ink-muted); margin:-6px 0 14px;">
+                La rareza de cada versión se calcula automáticamente según su valoración.
+              </p>
+              <div id="edit-versiones-container"></div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Estrategias Ofensivas</legend>
+              <div class="estrategia-grid">
+                <div class="estrategia-row"><span class="estrategia-nombre">Contraataque</span><select id="edit-bof_contraataque" class="bonif-select"></select></div>
+                <div class="estrategia-row"><span class="estrategia-nombre">Juego de Posesión (Tiki-Taka)</span><select id="edit-bof_posesion" class="bonif-select"></select></div>
+                <div class="estrategia-row"><span class="estrategia-nombre">Presión Alta (Gegenpressing)</span><select id="edit-bof_presion" class="bonif-select"></select></div>
+                <div class="estrategia-row"><span class="estrategia-nombre">Juego Directo</span><select id="edit-bof_directo" class="bonif-select"></select></div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Estrategias Defensivas</legend>
+              <div class="estrategia-grid">
+                <div class="estrategia-row"><span class="estrategia-nombre">Bloque Bajo</span><select id="edit-bdef_bloquebajo" class="bonif-select"></select></div>
+                <div class="estrategia-row"><span class="estrategia-nombre">Bloque Alto</span><select id="edit-bdef_bloquealto" class="bonif-select"></select></div>
+                <div class="estrategia-row"><span class="estrategia-nombre">Defensa por Zona</span><select id="edit-bdef_zona" class="bonif-select"></select></div>
+                <div class="estrategia-row"><span class="estrategia-nombre">Marcaje al Hombre</span><select id="edit-bdef_marcaje" class="bonif-select"></select></div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Talentos</legend>
+              <p style="font-size:.78rem; color:var(--ink-muted); margin:-6px 0 14px;">
+                Siempre 5 talentos por jugador. Se activan según la rareza de la versión que se posea.
+              </p>
+              <div id="edit-talentos-container"></div>
+            </fieldset>
+
+            <div class="modal-actions">
+              <button type="submit" class="submit-btn" style="flex:1;">Guardar cambios</button>
+              <button type="button" class="btn-danger" id="btn-eliminar">Eliminar jugador</button>
+            </div>
+            <p class="error-text" id="edit-error"></p>
+          </div>
+
+          <!-- ---------- Columna derecha: preview fija ---------- -->
+          <div class="modal-preview-col">
+            <span class="preview-label">Vista previa</span>
+            <div class="preview-nav">
+              <button type="button" id="edit-preview-prev" class="preview-arrow">‹</button>
+              <span id="edit-preview-version-label">Versión 1</span>
+              <button type="button" id="edit-preview-next" class="preview-arrow">›</button>
+            </div>
+            <div class="player-card rareza-estandar" id="edit-preview-card">
+              <div class="card-img-placeholder" id="edit-preview-photo">Sin foto</div>
+              <div class="card-info">
+                <div class="card-info-top">
+                  <span class="card-rating" id="edit-preview-rating">--</span>
+                  <span class="card-pos" id="edit-preview-position">POS</span>
+                </div>
+                <div class="card-name" id="edit-preview-name">Nombre del jugador</div>
+                <div class="card-info-bottom">
+                  <span class="card-rareza-label" id="edit-preview-rareza">Estándar</span>
+                </div>
               </div>
             </div>
           </div>
+
         </div>
-
-        <fieldset>
-          <legend>Datos del jugador</legend>
-          <div class="field-row">
-            <div class="field" style="grid-column:1/-1;">
-              <label for="edit-nombre">Nombre</label>
-              <input type="text" id="edit-nombre" required />
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field" style="grid-column:1/-1;">
-              <label for="edit-nacionalidad">Nacionalidad</label>
-              <select id="edit-nacionalidad" required></select>
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Versiones de la carta</legend>
-          <p style="font-size:.78rem; color:var(--ink-muted); margin:-6px 0 14px;">
-            La rareza de cada versión se calcula automáticamente según su valoración.
-          </p>
-          <div id="edit-versiones-container"></div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Estrategias Ofensivas</legend>
-          <div class="estrategia-grid">
-            <div class="estrategia-row"><span class="estrategia-nombre">Contraataque</span><select id="edit-bof_contraataque" class="bonif-select"></select></div>
-            <div class="estrategia-row"><span class="estrategia-nombre">Juego de Posesión (Tiki-Taka)</span><select id="edit-bof_posesion" class="bonif-select"></select></div>
-            <div class="estrategia-row"><span class="estrategia-nombre">Presión Alta (Gegenpressing)</span><select id="edit-bof_presion" class="bonif-select"></select></div>
-            <div class="estrategia-row"><span class="estrategia-nombre">Juego Directo</span><select id="edit-bof_directo" class="bonif-select"></select></div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Estrategias Defensivas</legend>
-          <div class="estrategia-grid">
-            <div class="estrategia-row"><span class="estrategia-nombre">Bloque Bajo</span><select id="edit-bdef_bloquebajo" class="bonif-select"></select></div>
-            <div class="estrategia-row"><span class="estrategia-nombre">Bloque Alto</span><select id="edit-bdef_bloquealto" class="bonif-select"></select></div>
-            <div class="estrategia-row"><span class="estrategia-nombre">Defensa por Zona</span><select id="edit-bdef_zona" class="bonif-select"></select></div>
-            <div class="estrategia-row"><span class="estrategia-nombre">Marcaje al Hombre</span><select id="edit-bdef_marcaje" class="bonif-select"></select></div>
-          </div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Talentos</legend>
-          <p style="font-size:.78rem; color:var(--ink-muted); margin:-6px 0 14px;">
-            Siempre 5 talentos por jugador. Se activan según la rareza de la versión que se posea.
-          </p>
-          <div id="edit-talentos-container"></div>
-        </fieldset>
-
-        <div class="modal-actions">
-          <button type="submit" class="submit-btn" style="flex:1;">Guardar cambios</button>
-          <button type="button" class="btn-danger" id="btn-eliminar">Eliminar jugador</button>
-        </div>
-        <p class="error-text" id="edit-error"></p>
       </form>
     </div>
   </div>
