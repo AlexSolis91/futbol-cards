@@ -6,6 +6,7 @@ import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc, orderBy, 
 import { firebaseConfig } from "../js/firebase-config.js";
 import { PAISES, POSICIONES, RAREZAS, BONIF_VALS, ESTRATEGIAS_OF, ESTRATEGIAS_DEF,
          flagEmoji, paisACodigo, rarezaCSS, buildCardHTML } from "../js/card-utils.js";
+import { RAREZA_TALENTOS, renderTalentos, ajustarCantidadBloques, leerTalentos } from "../js/talentos-ui.js";
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -91,6 +92,14 @@ enlazarToggle("edit-posSec","edit-valSec");
 enlazarToggle("edit-posTer","edit-valTer");
 
 poblarSelects();
+
+// ---------- Talentos (modal de edición) ----------
+const editTalentosContainer = document.getElementById("edit-talentos-container");
+document.getElementById("edit-rareza").addEventListener("change", () => {
+  const rareza = document.getElementById("edit-rareza").value;
+  const cantidad = RAREZA_TALENTOS[rareza] || 1;
+  ajustarCantidadBloques(editTalentosContainer, cantidad);
+});
 
 // ---------- Login ----------
 document.getElementById("login-form").addEventListener("submit", async e => {
@@ -221,6 +230,10 @@ function abrirModal(j) {
     actualizarColorBonif(s);
   });
 
+  // Talentos: render según rareza, precargando los ya guardados
+  const cantidadTalentos = RAREZA_TALENTOS[j.rareza] || 1;
+  renderTalentos(editTalentosContainer, cantidadTalentos, j.talentos || []);
+
   document.getElementById("edit-error").textContent = "";
   document.getElementById("modal-overlay").classList.remove("hidden");
 }
@@ -263,6 +276,7 @@ document.getElementById("form-editar").addEventListener("submit", async e => {
       zona:          Number(document.getElementById("edit-bdef_zona").value),
       marcajeHombre: Number(document.getElementById("edit-bdef_marcaje").value),
     },
+    talentos: leerTalentos(editTalentosContainer),
   };
 
   try {
