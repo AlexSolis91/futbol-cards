@@ -550,6 +550,17 @@ input::placeholder { color:#5b6e64; }
 .rareza-badge.rareza-elite-mundial { color: var(--rareza-elite-mundial); border-color: var(--rareza-elite-mundial); }
 .rareza-badge.rareza-leyenda       { color: var(--rareza-leyenda);       border-color: var(--rareza-leyenda); }
 
+.droprate-badge {
+  font-family: var(--font-mono);
+  font-size: .8rem;
+  font-weight: 700;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  color: var(--turf);
+  text-align: center;
+}
+
 /* ---------- Preview con flechas de versión ---------- */
 .preview-nav {
   display: flex;
