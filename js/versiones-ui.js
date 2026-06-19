@@ -11,7 +11,7 @@
 // guarda como elección manual.
 // ============================================================
 
-import { POSICIONES, calcularRareza, rarezaCSS } from "./card-utils.js";
+import { POSICIONES, calcularRareza, calcularDropRate, rarezaCSS } from "./card-utils.js";
 
 export const MAX_VERSIONES = 4;
 
@@ -49,6 +49,10 @@ function bloqueVersionHTML(index, data = {}) {
           <label>Rareza</label>
           <div class="rareza-badge">—</div>
         </div>
+        <div class="field">
+          <label>Drop Rate</label>
+          <div class="droprate-badge">—</div>
+        </div>
       </div>
 
       <div class="field-row">
@@ -78,30 +82,26 @@ function bloqueVersionHTML(index, data = {}) {
           <input type="number" class="v-valTer" min="1" max="99" value="${data.valoracionTerciaria || ''}" ${tieneTer ? "" : "disabled"} />
         </div>
       </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>Ratio de drop en sobres (%)</label>
-          <input type="number" class="v-dropRate" min="0" max="100" step="0.1" placeholder="10" value="${data.dropRate ?? ''}" />
-        </div>
-      </div>
     </div>`;
 }
 
 function actualizarRarezaBadge(block) {
-  const valNat = block.querySelector(".v-valNat");
-  const badge  = block.querySelector(".rareza-badge");
+  const valNat     = block.querySelector(".v-valNat");
+  const badge      = block.querySelector(".rareza-badge");
+  const dropBadge  = block.querySelector(".droprate-badge");
   const v = parseInt(valNat.value);
 
   badge.classList.remove("rareza-estandar","rareza-franquicia","rareza-elite","rareza-elite-mundial","rareza-leyenda");
 
   if (!v) {
     badge.textContent = "—";
+    dropBadge.textContent = "—";
     return;
   }
   const rareza = calcularRareza(v);
   badge.textContent = rareza;
   badge.classList.add(rarezaCSS(rareza));
+  dropBadge.textContent = `${calcularDropRate(v)}%`;
 }
 
 function wireVersionBlockEvents(block) {
@@ -153,7 +153,7 @@ export function leerVersiones(container) {
       valoracionSecundaria: posSec ? (Number(block.querySelector(".v-valSec").value) || null) : null,
       posicionTerciaria:    posTer || null,
       valoracionTerciaria:  posTer ? (Number(block.querySelector(".v-valTer").value) || null) : null,
-      dropRate:             Number(block.querySelector(".v-dropRate").value) || 0,
+      dropRate:             calcularDropRate(block.querySelector(".v-valNat").value),
     });
   });
 
