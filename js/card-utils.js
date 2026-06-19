@@ -47,6 +47,24 @@ export const RAREZAS = [
   { value:"Leyenda",       css:"rareza-leyenda" },
 ];
 
+// La rareza ya NO se elige a mano: se calcula a partir de la
+// valoración natural de cada VERSIÓN del jugador.
+export const RAREZA_RANGOS = [
+  { rareza:"Estándar",      min:1,  max:69 },
+  { rareza:"Franquicia",    min:70, max:79 },
+  { rareza:"Elite",         min:80, max:89 },
+  { rareza:"Elite Mundial", min:90, max:95 },
+  { rareza:"Leyenda",       min:96, max:99 },
+];
+
+export function calcularRareza(valoracion) {
+  const v = Number(valoracion);
+  if (!v) return "Estándar";
+  const tier = RAREZA_RANGOS.find(r => v >= r.min && v <= r.max);
+  if (tier) return tier.rareza;
+  return v > 99 ? "Leyenda" : "Estándar";
+}
+
 export const BONIF_VALS = [5,4,3,2,1,0,-1,-2,-3,-4,-5];
 
 export const ESTRATEGIAS_OF = [
@@ -79,11 +97,14 @@ export function rarezaCSS(rareza) {
   return r ? r.css : "rareza-estandar";
 }
 
-// Construye el HTML de una carta de jugador
+// Construye el HTML de una carta de jugador.
+// `d` puede traer rareza ya calculada (d.rareza) o se calcula aquí
+// a partir de d.valoracionNatural si no viene.
 export function buildCardHTML(d) {
   const codigo  = paisACodigo(d.nacionalidad);
   const flag    = codigo ? flagEmoji(codigo) : "🏳️";
-  const css     = rarezaCSS(d.rareza);
+  const rareza  = d.rareza || calcularRareza(d.valoracionNatural);
+  const css     = rarezaCSS(rareza);
   const imgHTML = d.imagenURL
     ? `<img class="card-img" src="${d.imagenURL}" alt="${d.nombre}" />`
     : `<div class="card-img-placeholder">Sin foto</div>`;
@@ -94,11 +115,11 @@ export function buildCardHTML(d) {
       <div class="card-info">
         <div class="card-info-top">
           <span class="card-rating">${d.valoracionNatural ?? '--'}</span>
-          <span class="card-pos">${d.posicionNatural}</span>
+          <span class="card-pos">${d.posicionNatural || ''}</span>
         </div>
         <div class="card-name">${d.nombre}</div>
         <div class="card-info-bottom">
-          <span class="card-rareza-label">${d.rareza}</span>
+          <span class="card-rareza-label">${rareza}</span>
         </div>
       </div>
     </div>`;
