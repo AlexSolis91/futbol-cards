@@ -9,6 +9,7 @@ import {
 import { firebaseConfig } from "../js/firebase-config.js";
 import { PAISES, POSICIONES, RAREZAS, BONIF_VALS, ESTRATEGIAS_OF, ESTRATEGIAS_DEF,
          flagEmoji, paisACodigo, rarezaCSS, buildCardHTML } from "../js/card-utils.js";
+import { RAREZA_TALENTOS, ajustarCantidadBloques, leerTalentos } from "../js/talentos-ui.js";
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -56,6 +57,16 @@ function actualizarColorBonif(sel) {
 }
 
 poblarSelects();
+
+// ---------- Talentos ----------
+const talentosContainer = document.getElementById("talentos-container");
+function actualizarCantidadTalentos() {
+  const rareza = document.getElementById("rareza").value;
+  const cantidad = RAREZA_TALENTOS[rareza] || 1;
+  ajustarCantidadBloques(talentosContainer, cantidad);
+}
+document.getElementById("rareza").addEventListener("change", actualizarCantidadTalentos);
+actualizarCantidadTalentos(); // inicial (Estándar = 1 talento)
 
 // ---------- Toggle valoraciones secundarias ----------
 function enlazarToggle(selectId, inputId) {
@@ -181,6 +192,7 @@ document.getElementById("form-jugador").addEventListener("submit", async e => {
       zona:          Number(document.getElementById("bdef_zona").value),
       marcajeHombre: Number(document.getElementById("bdef_marcaje").value),
     },
+    talentos: leerTalentos(talentosContainer),
     fechaCreacion: serverTimestamp(),
   };
 
@@ -195,6 +207,8 @@ document.getElementById("form-jugador").addEventListener("submit", async e => {
     document.getElementById("form-jugador").reset();
     document.getElementById("valoracionSecundaria").disabled = true;
     document.getElementById("valoracionTerciaria").disabled  = true;
+    talentosContainer.innerHTML = "";
+    actualizarCantidadTalentos();
     // Resetear colores de bonificación
     [...ESTRATEGIAS_OF, ...ESTRATEGIAS_DEF].forEach(({ id }) => {
       const sel = document.getElementById(id);
