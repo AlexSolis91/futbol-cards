@@ -32,6 +32,7 @@ export const POSICIONES = [
   { value:"MI",  label:"MI — Volante Izquierdo" },
   { value:"MC",  label:"MC — Mediocentro" },
   { value:"MCO", label:"MCO — Mediocentro Ofensivo" },
+  { value:"MP",  label:"MP — Media Punta" },
   { value:"ED",  label:"ED — Extremo Derecho" },
   { value:"EI",  label:"EI — Extremo Izquierdo" },
   { value:"DC",  label:"DC — Delantero Centro" },
@@ -96,6 +97,7 @@ export function buildCardHTML(d) {
         </div>
         <div class="card-name">${d.nombre}</div>
         <div class="card-info-bottom">
+          <span class="card-flag">${flag}</span>
           <span class="card-rareza-label">${d.rareza}</span>
         </div>
       </div>
