@@ -35,6 +35,7 @@ export const POSICIONES = [
   { value:"MP",  label:"MP — Media Punta" },
   { value:"ED",  label:"ED — Extremo Derecho" },
   { value:"EI",  label:"EI — Extremo Izquierdo" },
+  { value:"SD",  label:"SD — Segundo Delantero" },
   { value:"DC",  label:"DC — Delantero Centro" },
 ];
 
