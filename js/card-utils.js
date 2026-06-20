@@ -50,11 +50,11 @@ export const RAREZAS = [
 // La rareza ya NO se elige a mano: se calcula a partir de la
 // valoración natural de cada VERSIÓN del jugador.
 export const RAREZA_RANGOS = [
-  { rareza:"Estándar",      min:1,  max:69 },
-  { rareza:"Franquicia",    min:70, max:79 },
-  { rareza:"Elite",         min:80, max:89 },
-  { rareza:"Elite Mundial", min:90, max:95 },
-  { rareza:"Leyenda",       min:96, max:99 },
+  { rareza:"Estándar",      min:0,  max:69 },
+  { rareza:"Franquicia",    min:70, max:76 },
+  { rareza:"Elite",         min:77, max:83 },
+  { rareza:"Elite Mundial", min:84, max:89 },
+  { rareza:"Leyenda",       min:90, max:99 },
 ];
 
 export function calcularRareza(valoracion) {
@@ -67,10 +67,10 @@ export function calcularRareza(valoracion) {
 
 // Ratio de drop en sobres: fijo por rareza, no se elige a mano.
 export const RAREZA_DROP_RATE = {
-  "Estándar":      49.99,
-  "Franquicia":    30,
-  "Elite":         15,
-  "Elite Mundial": 5,
+  "Estándar":      80,
+  "Franquicia":    13,
+  "Elite":         5,
+  "Elite Mundial": 1.99,
   "Leyenda":       0.01,
 };
 
