@@ -164,6 +164,18 @@ input::placeholder { color:#5b6e64; }
   text-transform: uppercase;
   letter-spacing: .08em;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+/* Cuando el contenedor estable de la preview recibe una <img> hija
+   (en vez de ser reemplazado), la imagen debe llenar el espacio igual
+   que .card-img */
+.player-card .card-img-placeholder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
 }
 
 /* Franja inferior de info */
