@@ -103,12 +103,9 @@ function actualizarPreview() {
   previewCard.className       = `player-card ${rarezaCSS(rareza)}`;
 
   if (v.imagenURL) {
-    previewPhoto.outerHTML = `<img id="preview-photo" class="card-img" src="${v.imagenURL}" alt="${nombreGlobal}" onerror="this.outerHTML='<div class=card-img-placeholder id=preview-photo>Sin foto</div>'" />`;
+    previewPhoto.innerHTML = `<img src="${v.imagenURL}" alt="${nombreGlobal}" onerror="this.parentElement.innerHTML='Sin foto'" />`;
   } else {
-    const existing = document.getElementById("preview-photo");
-    if (existing.tagName === "IMG") {
-      existing.outerHTML = `<div class="card-img-placeholder" id="preview-photo">Sin foto</div>`;
-    }
+    previewPhoto.innerHTML = "Sin foto";
   }
 
   btnPrev.disabled = previewVersionIndex === 0;
