@@ -113,12 +113,9 @@ function actualizarEditPreview() {
   editPreviewCard.className       = `player-card ${rarezaCSS(rareza)}`;
 
   if (v.imagenURL) {
-    editPreviewPhoto.outerHTML = `<img id="edit-preview-photo" class="card-img" src="${v.imagenURL}" alt="${nombreGlobal}" onerror="this.outerHTML='<div class=card-img-placeholder id=edit-preview-photo>Sin foto</div>'" />`;
+    editPreviewPhoto.innerHTML = `<img src="${v.imagenURL}" alt="${nombreGlobal}" onerror="this.parentElement.innerHTML='Sin foto'" />`;
   } else {
-    const existing = document.getElementById("edit-preview-photo");
-    if (existing.tagName === "IMG") {
-      existing.outerHTML = `<div class="card-img-placeholder" id="edit-preview-photo">Sin foto</div>`;
-    }
+    editPreviewPhoto.innerHTML = "Sin foto";
   }
 
   editBtnPrev.disabled = editPreviewVersionIndex === 0;
