@@ -50,11 +50,11 @@ export const RAREZAS = [
 // La rareza ya NO se elige a mano: se calcula a partir de la
 // valoración natural de cada VERSIÓN del jugador.
 export const RAREZA_RANGOS = [
-  { rareza:"Estándar",      min:0,  max:69 },
-  { rareza:"Franquicia",    min:70, max:76 },
-  { rareza:"Elite",         min:77, max:83 },
-  { rareza:"Elite Mundial", min:84, max:89 },
-  { rareza:"Leyenda",       min:90, max:99 },
+  { rareza:"Estándar",      min:0,  max:74 },
+  { rareza:"Franquicia",    min:75, max:80 },
+  { rareza:"Elite",         min:81, max:86 },
+  { rareza:"Elite Mundial", min:87, max:92 },
+  { rareza:"Leyenda",       min:93, max:99 },
 ];
 
 export function calcularRareza(valoracion) {
