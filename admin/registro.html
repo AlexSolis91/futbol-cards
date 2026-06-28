@@ -58,7 +58,11 @@
               <div class="field-row">
                 <div class="field" style="grid-column: 1 / -1;">
                   <label for="nombre">Nombre del jugador</label>
-                  <input type="text" id="nombre" required placeholder="Ej. Cristiano Ronaldo" />
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="text" id="nombre" required placeholder="Ej. Cristiano Ronaldo" style="flex:1;" />
+                    <button type="button" id="btn-ia" class="btn-ia">✦ Autocompletar con IA</button>
+                  </div>
+                  <p class="ia-status" id="ia-status"></p>
                 </div>
               </div>
               <div class="field-row">
