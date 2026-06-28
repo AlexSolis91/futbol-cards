@@ -608,3 +608,31 @@ input::placeholder { color:#5b6e64; }
   min-width: 90px;
   text-align: center;
 }
+
+/* ---------- Botón IA ---------- */
+.btn-ia {
+  background: var(--pitch-900);
+  border: 1px solid var(--turf);
+  color: var(--turf);
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+  font-size: .75rem;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.btn-ia:hover  { background: rgba(61,220,151,.08); }
+.btn-ia:disabled { opacity: .45; cursor: not-allowed; }
+
+.ia-status {
+  font-size: .75rem;
+  color: var(--ink-muted);
+  font-style: italic;
+  min-height: 1em;
+  margin-top: 4px;
+}
+.ia-status.ok    { color: var(--turf); }
+.ia-status.error { color: var(--danger); }
