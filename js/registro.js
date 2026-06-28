@@ -14,7 +14,7 @@ import { firebaseConfig } from "../js/firebase-config.js";
 
 import { PAISES, BONIF_VALS, ESTRATEGIAS_OF, ESTRATEGIAS_DEF,
          flagEmoji, paisACodigo, rarezaCSS, calcularRareza } from "../js/card-utils.js";
-import { ajustarCantidadBloques, leerTalentos } from "../js/talentos-ui.js";
+import { ajustarCantidadBloques, leerTalentos, renderTalentos } from "../js/talentos-ui.js";
 import { MAX_VERSIONES, renderVersiones, leerVersiones, leerVersionIndividual } from "../js/versiones-ui.js";
 
 const app  = initializeApp(firebaseConfig);
@@ -121,6 +121,164 @@ btnNext.addEventListener("click", () => {
 document.getElementById("nombre").addEventListener("input", actualizarPreview);
 
 actualizarPreview();
+
+// ---------- Autocompletar con IA ----------
+const SYSTEM_PROMPT = `Eres un experto analista de fútbol para un juego de cartas coleccionables.
+Dado el nombre de un jugador de fútbol, genera sus estadísticas de carta de forma realista.
+
+CÓDIGOS DE POSICIÓN (usa EXACTAMENTE estos):
+GK (Portero), LD (Lateral Derecho), LI (Lateral Izquierdo), DFC (Defensa Central),
+MCD (Mediocentro Defensivo), MD (Volante Derecho), MI (Volante Izquierdo),
+MC (Mediocentro), MCO (Mediocentro Ofensivo), MP (Media Punta),
+ED (Extremo Derecho), EI (Extremo Izquierdo), SD (Segundo Delantero), DC (Delantero Centro)
+
+RANGOS DE RAREZA (determinados por valoracionNatural):
+Estándar: 0-74 | Franquicia: 75-80 | Elite: 81-86 | Elite Mundial: 87-92 | Leyenda: 93-99
+
+VERSIONES (4 en total, de menor a mayor valoracion, representando la evolución del jugador):
+v1 = Versión más débil/temprana (valoracion más baja)
+v2 = Desarrollo / etapa media
+v3 = Pico en su club principal
+v4 = Mejor versión absoluta / legendaria (valoracion más alta)
+
+ESTRATEGIAS (valor -5 a +5, qué tan bien rinde el jugador en cada táctica):
+Ofensivas: contraataque, posesion (tiki-taka), presionAlta (gegenpressing), juegoDirecto
+Defensivas: bloqueBajo, bloqueAlto, zona (zonal), marcajeHombre
+
+TALENTOS (5 en total, del más simple al más complejo):
+- tipo: "buff" (beneficia a tu equipo) o "debuff" (perjudica al rival)
+- alcance: "individual" (solo buff, afecta al portador), "posicion", "nacionalidad", "rareza", "sinergia"
+- valor: +1 a +5 para buff, -1 a -5 para debuff
+- REGLA: "debuff" NO puede tener alcance "individual"
+- Para posicion: campo "posiciones" (array de códigos)
+- Para nacionalidad: campo "nacionalidades" (array en ESPAÑOL: España, Francia, Brasil, etc.)
+- Para rareza: campo "rarezas" (array: Estándar, Franquicia, Elite, Elite Mundial, Leyenda)
+- Para sinergia: campos "criterioSinergia" (posicion/nacionalidad/rareza), "valoresCriterio" (array), "cantidadMinima" (número entero, mínimo POR CADA valor, lógica AND)
+
+Devuelve SOLO el JSON válido sin texto adicional ni bloques markdown.`;
+
+async function autocompletar() {
+  const nombre = document.getElementById("nombre").value.trim();
+  const statusEl = document.getElementById("ia-status");
+  const btnIA = document.getElementById("btn-ia");
+
+  if (!nombre) {
+    statusEl.className = "ia-status error";
+    statusEl.textContent = "Escribe el nombre del jugador primero.";
+    return;
+  }
+
+  btnIA.disabled = true;
+  statusEl.className = "ia-status";
+  statusEl.textContent = "Analizando a " + nombre + "...";
+
+  const userPrompt = `Analiza al jugador de fútbol "${nombre}" y devuelve sus estadísticas de carta.
+
+Considera su carrera real, estilo de juego, equipos y selección nacional.
+
+Devuelve exactamente este formato JSON:
+{
+  "nacionalidad": "España",
+  "versiones": [
+    {"posicionNatural": "DC", "valoracionNatural": 82, "posicionSecundaria": "EI", "valoracionSecundaria": 78, "posicionTerciaria": null, "valoracionTerciaria": null},
+    {"posicionNatural": "DC", "valoracionNatural": 87, "posicionSecundaria": "EI", "valoracionSecundaria": 83, "posicionTerciaria": null, "valoracionTerciaria": null},
+    {"posicionNatural": "DC", "valoracionNatural": 91, "posicionSecundaria": "SD", "valoracionSecundaria": 88, "posicionTerciaria": "EI", "valoracionTerciaria": 85},
+    {"posicionNatural": "DC", "valoracionNatural": 95, "posicionSecundaria": "SD", "valoracionSecundaria": 92, "posicionTerciaria": "EI", "valoracionTerciaria": 88}
+  ],
+  "estrategiasOfensivas": {"contraataque": 2, "posesion": 3, "presionAlta": 1, "juegoDirecto": 4},
+  "estrategiasDefensivas": {"bloqueBajo": -1, "bloqueAlto": 2, "zona": 0, "marcajeHombre": 1},
+  "talentos": [
+    {"tipo": "buff", "alcance": "individual", "valor": 3},
+    {"tipo": "buff", "alcance": "posicion", "posiciones": ["DC", "SD"], "valor": 2},
+    {"tipo": "debuff", "alcance": "posicion", "posiciones": ["DFC", "GK"], "valor": -2},
+    {"tipo": "buff", "alcance": "sinergia", "criterioSinergia": "nacionalidad", "valoresCriterio": ["España"], "cantidadMinima": 2, "valor": 3},
+    {"tipo": "buff", "alcance": "rareza", "rarezas": ["Leyenda", "Elite Mundial"], "valor": 2}
+  ]
+}
+
+Reglas importantes:
+- Las 4 versiones deben tener valoracionNatural distintas y ascendentes (v4 siempre la más alta)
+- Los valores de estrategia reflejan el estilo real del jugador
+- El talento 1 debe ser el más simple (individual), el 5 el más complejo
+- Nacionalidad en español
+- Usa EXACTAMENTE los códigos de posición dados`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: [{ role: "user", content: userPrompt }]
+      })
+    });
+
+    const data = await response.json();
+    const rawText = data.content?.[0]?.text || "";
+    const clean = rawText.replace(/```json|```/g, "").trim();
+    const playerData = JSON.parse(clean);
+
+    aplicarDatosIA(playerData);
+    statusEl.className = "ia-status ok";
+    statusEl.textContent = "✓ Datos completados. Solo falta agregar las URLs de imagen.";
+  } catch (err) {
+    console.error("Error IA:", err);
+    statusEl.className = "ia-status error";
+    statusEl.textContent = "Error al analizar el jugador. Revisa la consola.";
+  } finally {
+    btnIA.disabled = false;
+  }
+}
+
+function aplicarDatosIA(data) {
+  // Nacionalidad
+  if (data.nacionalidad) {
+    const nacSel = document.getElementById("nacionalidad");
+    if (nacSel) nacSel.value = data.nacionalidad;
+  }
+
+  // Versiones (re-render con datos)
+  if (data.versiones) {
+    renderVersiones(versionesContainer, data.versiones);
+    previewVersionIndex = 0;
+  }
+
+  // Estrategias ofensivas
+  const ofMap = {
+    bof_contraataque: data.estrategiasOfensivas?.contraataque,
+    bof_posesion:     data.estrategiasOfensivas?.posesion,
+    bof_presion:      data.estrategiasOfensivas?.presionAlta,
+    bof_directo:      data.estrategiasOfensivas?.juegoDirecto,
+  };
+  Object.entries(ofMap).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined) { el.value = val; actualizarColorBonif(el); }
+  });
+
+  // Estrategias defensivas
+  const defMap = {
+    bdef_bloquebajo: data.estrategiasDefensivas?.bloqueBajo,
+    bdef_bloquealto: data.estrategiasDefensivas?.bloqueAlto,
+    bdef_zona:       data.estrategiasDefensivas?.zona,
+    bdef_marcaje:    data.estrategiasDefensivas?.marcajeHombre,
+  };
+  Object.entries(defMap).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined) { el.value = val; actualizarColorBonif(el); }
+  });
+
+  // Talentos (re-render con datos)
+  if (data.talentos) {
+    renderTalentos(talentosContainer, 5, data.talentos);
+  }
+
+  // Actualizar preview
+  actualizarPreview();
+}
+
+document.getElementById("btn-ia").addEventListener("click", autocompletar);
 
 // ---------- Toast ----------
 const toast = document.getElementById("toast");
