@@ -204,7 +204,7 @@ Reglas importantes:
 - Usa EXACTAMENTE los códigos de posición dados`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("https://tight-tooth-e67e.solisalex8291.workers.dev", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
