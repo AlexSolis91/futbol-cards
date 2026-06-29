@@ -198,11 +198,41 @@ async function autocompletar() {
 
   btnIA.disabled = true;
   statusEl.className = "ia-status";
+  statusEl.textContent = "Leyendo catálogo existente...";
+
+  // ── 1. Leer todos los jugadores de Firestore para dar contexto a Claude ──
+  let catalogoContexto = "";
+  try {
+    const snap = await getDocs(collection(db, "jugadores_global"));
+    if (!snap.empty) {
+      const lineas = [];
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        const versiones = (d.versiones || []).filter(v => v && v.valoracionNatural);
+        if (versiones.length === 0) return;
+        const mejorVal = Math.max(...versiones.map(v => v.valoracionNatural));
+        const pos = versiones[versiones.length - 1]?.posicionNatural || "";
+        lineas.push(`${d.nombre} (${d.nacionalidad || ""}, ${pos}): valoración máxima ${mejorVal}`);
+      });
+      if (lineas.length > 0) {
+        catalogoContexto = `\n\nCATÁLOGO ACTUAL DEL JUEGO (respeta estas valoraciones al asignar la del nuevo jugador):\n${lineas.join("\n")}`;
+      }
+    }
+  } catch (err) {
+    console.warn("No se pudo leer el catálogo:", err);
+    // No es crítico — continuamos sin contexto
+  }
+
   statusEl.textContent = "Analizando a " + nombre + "...";
 
   const userPrompt = `Analiza al jugador de fútbol "${nombre}" y devuelve sus estadísticas de carta.
 
-Considera su carrera real, estilo de juego, equipos y selección nacional.
+Considera su carrera real, estilo de juego, equipos y selección nacional.${catalogoContexto}
+
+IMPORTANTE SOBRE LAS VALORACIONES:
+- Respeta la jerarquía objetiva entre jugadores. Si el catálogo ya tiene a Ronaldinho con 96 y a Kaká con 94, un jugador como Robinho no debe superar esos valores.
+- Usa el catálogo como referencia para situar correctamente al nuevo jugador en la escala.
+- Si el jugador no existe en el catálogo, asigna valores acordes a su nivel histórico real comparado con los que ya están.
 
 Devuelve exactamente este formato JSON:
 {
@@ -216,18 +246,18 @@ Devuelve exactamente este formato JSON:
   "estrategiasOfensivas": {"contraataque": 2, "posesion": 3, "presionAlta": 1, "juegoDirecto": 4},
   "estrategiasDefensivas": {"bloqueBajo": -1, "bloqueAlto": 2, "zona": 0, "marcajeHombre": 1},
   "talentos": [
-    {"tipo": "buff", "alcance": "individual", "valor": 3},
+    {"tipo": "buff", "alcance": "individual", "valor": 1},
     {"tipo": "buff", "alcance": "posicion", "posiciones": ["DC", "SD"], "valor": 2},
     {"tipo": "debuff", "alcance": "posicion", "posiciones": ["DFC", "GK"], "valor": -2},
     {"tipo": "buff", "alcance": "sinergia", "criterioSinergia": "nacionalidad", "valoresCriterio": ["España"], "cantidadMinima": 2, "valor": 3},
-    {"tipo": "buff", "alcance": "rareza", "rarezas": ["Leyenda", "Elite Mundial"], "valor": 2}
+    {"tipo": "buff", "alcance": "rareza", "rarezas": ["Leyenda", "Elite Mundial"], "valor": 4}
   ]
 }
 
 Reglas importantes:
 - Las 4 versiones deben tener valoracionNatural distintas y ascendentes (v4 siempre la más alta)
 - Los valores de estrategia reflejan el estilo real del jugador
-- El talento 1 debe ser el más simple (individual), el 5 el más complejo
+- Los talentos deben ser progresivos: talento 1 simple y valor bajo, talento 5 complejo y valor alto
 - Nacionalidad en español
 - Usa EXACTAMENTE los códigos de posición dados`;
 
