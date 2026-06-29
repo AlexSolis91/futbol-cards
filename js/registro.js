@@ -277,7 +277,7 @@ Reglas importantes:
 - Los valores de estrategia reflejan el estilo real del jugador
 - Los talentos deben ser progresivos: talento 1 simple y valor bajo, talento 5 complejo y valor alto
 - Nacionalidad en español
-- Usa EXACTAMENTE los códigos de posición dados
+- Usa EXACTAMENTE los códigos de posición dados`;
 
   try {
     const response = await fetch("https://tight-tooth-e67e.solisalex8291.workers.dev", {
