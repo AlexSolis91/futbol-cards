@@ -145,17 +145,45 @@ ESTRATEGIAS (valor -5 a +5, qué tan bien rinde el jugador en cada táctica):
 Ofensivas: contraataque, posesion (tiki-taka), presionAlta (gegenpressing), juegoDirecto
 Defensivas: bloqueBajo, bloqueAlto, zona (zonal), marcajeHombre
 
-TALENTOS (5 en total, del más simple al más complejo):
-- tipo: "buff" (beneficia a tu equipo) o "debuff" (perjudica al rival)
-- alcance: "individual" (solo buff, afecta al portador), "posicion", "nacionalidad", "rareza", "sinergia"
-- valor: +1 a +5 para buff, -1 a -5 para debuff
-- REGLA: "debuff" NO puede tener alcance "individual"
-- Para posicion: campo "posiciones" (array de códigos)
-- Para nacionalidad: campo "nacionalidades" (array en ESPAÑOL: España, Francia, Brasil, etc.)
-- Para rareza: campo "rarezas" (array: Estándar, Franquicia, Elite, Elite Mundial, Leyenda)
-- Para sinergia: campos "criterioSinergia" (posicion/nacionalidad/rareza), "valoresCriterio" (array), "cantidadMinima" (número entero, mínimo POR CADA valor, lógica AND)
+TALENTOS (exactamente 5, con valores PROGRESIVOS — cada talento debe ser mejor que el anterior):
 
-Devuelve SOLO el JSON válido sin texto adicional ni bloques markdown.`;
+TALENTO 1 (se activa desde rareza Estandar — el mas basico):
+  Mecanicas simples: individual, posicion (1-2 posiciones max), o sinergia muy facil (1 jugador de 1 grupo)
+  Valor maximo: buff +1 o +2 / debuff -1 o -2
+  Ejemplo: buff individual +1, o sinergia pedir 1 jugador de cierta nacionalidad con valor +2
+
+TALENTO 2 (se activa desde rareza Franquicia):
+  Mecanicas simples/medias: posicion, nacionalidad, o sinergia sencilla
+  Valor maximo: buff +2 / debuff -2 (hasta +3 solo con sinergia que pida 2+ jugadores)
+  Ejemplo: buff por posicion +2, debuff por posicion -2
+
+TALENTO 3 (se activa desde rareza Elite):
+  Mecanicas medias: posicion multiple, nacionalidad, rareza, o sinergia moderada
+  Valor maximo: buff +3 / debuff -3
+  Ejemplo: buff por nacionalidad +3, sinergia 2 jugadores de misma posicion +3
+
+TALENTO 4 (se activa desde rareza Elite Mundial):
+  Mecanicas elaboradas: rareza, sinergia con 2 condiciones, debuff especifico
+  Valor maximo: buff +4 / debuff -4 (mecanicas simples max +3)
+  Ejemplo: sinergia 2 jugadores de misma rareza +4, debuff por rareza -3
+
+TALENTO 5 (se activa solo desde rareza Leyenda — el mas poderoso):
+  Mecanicas complejas: sinergia con multiples valores y cantidadMinima 2+, debuff amplio
+  Valor maximo: buff +5 / debuff -5 (si la mecanica es simple, max +3)
+  Ejemplo: sinergia pedir 2 jugadores de cada una de 2 nacionalidades especificas con valor +4 o +5
+
+REGLAS DE TALENTOS:
+- tipo: "buff" (beneficia a tu equipo) o "debuff" (perjudica al rival)
+- alcance: "individual" (solo buff), "posicion", "nacionalidad", "rareza", "sinergia"
+- "debuff" NUNCA puede usar alcance "individual"
+- Para posicion: campo "posiciones" (array de codigos de posicion)
+- Para nacionalidad: campo "nacionalidades" (array en ESPANOL: Espana, Francia, Brasil, etc.)
+- Para rareza: campo "rarezas" (array con nombres exactos de rareza)
+- Para sinergia: "criterioSinergia" (posicion/nacionalidad/rareza), "valoresCriterio" (array), "cantidadMinima" (minimo POR CADA valor marcado, logica AND)
+- Los 5 talentos deben ser coherentes con el estilo y nacionalidad real del jugador
+- Los valores deben subir progresivamente del talento 1 al 5
+
+Devuelve SOLO el JSON valido sin texto adicional ni bloques markdown.`;
 
 async function autocompletar() {
   const nombre = document.getElementById("nombre").value.trim();
