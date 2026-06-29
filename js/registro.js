@@ -135,11 +135,23 @@ ED (Extremo Derecho), EI (Extremo Izquierdo), SD (Segundo Delantero), DC (Delant
 RANGOS DE RAREZA (determinados por valoracionNatural):
 Estándar: 0-74 | Franquicia: 75-80 | Elite: 81-86 | Elite Mundial: 87-92 | Leyenda: 93-99
 
-VERSIONES (4 en total, de menor a mayor valoracion, representando la evolución del jugador):
-v1 = Versión más débil/temprana (valoracion más baja)
+VERSIONES (de 1 a 4 según la valoración máxima real del jugador):
+La cantidad de versiones depende de hasta qué rareza llega el jugador:
+- Solo Version 1       → si su maximo es Estandar  (0-74):   1 version
+- Versiones 1 y 2      → si su maximo es Franquicia (75-80):  2 versiones
+- Versiones 1, 2 y 3   → si su maximo es Elite      (81-86):  3 versiones
+- Versiones 1, 2, 3, 4 → si su maximo es Elite Mundial o Leyenda (87+): 4 versiones
+
+Cada version representa una etapa de la carrera del jugador, de menor a mayor valoracion:
+v1 = Version mas debil/temprana (valoracion mas baja)
 v2 = Desarrollo / etapa media
-v3 = Pico en su club principal
-v4 = Mejor versión absoluta / legendaria (valoracion más alta)
+v3 = Pico en su club principal (solo si llega a Elite o superior)
+v4 = Mejor version absoluta (solo si llega a Elite Mundial o Leyenda)
+
+EJEMPLOS:
+- Alexis Vega (maximo 77, Franquicia): devolver solo 2 versiones [72, 77]
+- Rafael Marquez (maximo 85, Elite): devolver 3 versiones [76, 80, 85]
+- Ronaldinho (maximo 96, Leyenda): devolver 4 versiones [80, 87, 92, 96]
 
 ESTRATEGIAS (valor -5 a +5, qué tan bien rinde el jugador en cada táctica):
 Ofensivas: contraataque, posesion (tiki-taka), presionAlta (gegenpressing), juegoDirecto
@@ -255,11 +267,17 @@ Devuelve exactamente este formato JSON:
 }
 
 Reglas importantes:
-- Las 4 versiones deben tener valoracionNatural distintas y ascendentes (v4 siempre la más alta)
+- El NÚMERO DE VERSIONES depende de la valoración máxima real del jugador:
+  * Máximo 0-74  (Estándar):       devuelve 1 versión
+  * Máximo 75-80 (Franquicia):     devuelve 2 versiones
+  * Máximo 81-86 (Elite):          devuelve 3 versiones
+  * Máximo 87+   (Elite Mundial/Leyenda): devuelve 4 versiones
+- Ejemplo: Alexis Vega mexicano del Toluca solo tiene 2 versiones porque su max es ~77
+- Las versiones deben tener valoracionNatural distintas y ascendentes
 - Los valores de estrategia reflejan el estilo real del jugador
 - Los talentos deben ser progresivos: talento 1 simple y valor bajo, talento 5 complejo y valor alto
 - Nacionalidad en español
-- Usa EXACTAMENTE los códigos de posición dados`;
+- Usa EXACTAMENTE los códigos de posición dados
 
   try {
     const response = await fetch("https://tight-tooth-e67e.solisalex8291.workers.dev", {
